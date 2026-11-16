@@ -1,0 +1,99 @@
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext.jsx'
+import { useLang } from '../../i18n/index.jsx'
+import AuthShell from './AuthShell.jsx'
+
+export default function Register() {
+  const { t } = useLang()
+  const { register } = useAuth()
+  const navigate = useNavigate()
+  const [form, setForm] = useState({ name: '', username: '', email: '', password: '', confirm: '' })
+  const [error, setError] = useState('')
+  const [busy, setBusy] = useState(false)
+
+  const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }))
+
+  async function submit(e) {
+    e.preventDefault()
+    setError('')
+    if (!form.name.trim() || !form.username.trim() || !form.email || !form.password) return setError(t('auth.errRequired'))
+    if (form.password.length < 8) return setError(t('auth.errShort'))
+    if (form.password !== form.confirm) return setError(t('auth.errMatch'))
+    setBusy(true)
+    try {
+      await register({
+        name: form.name.trim(),
+        username: form.username.trim().toLowerCase(),
+        email: form.email,
+        password: form.password,
+      })
+      navigate('/', { replace: true })
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  return (
+    <AuthShell>
+      <form onSubmit={submit} noValidate style={{ display: 'contents' }}>
+        <div>
+          <h2>{t('auth.registerTitle')}</h2>
+          <p className="muted small" style={{ marginTop: 6 }}>
+            {t('auth.registerHint')}
+          </p>
+        </div>
+
+        <div className="field">
+          <label htmlFor="name">{t('auth.fullName')}</label>
+          <input id="name" className="input" placeholder={t('auth.fullNamePh')} autoComplete="name" value={form.name} onChange={set('name')} />
+        </div>
+
+        <div className="field">
+          <label htmlFor="username">{t('auth.username')}</label>
+          <input
+            id="username"
+            className="input"
+            placeholder="chengvirak"
+            autoComplete="off"
+            autoCapitalize="none"
+            spellCheck={false}
+            value={form.username}
+            onChange={set('username')}
+          />
+          <span className="muted xs">{t('auth.usernameHint')}</span>
+        </div>
+
+        <div className="field">
+          <label htmlFor="email">{t('auth.email')}</label>
+          <input id="email" type="email" className="input" placeholder="you@example.com" autoComplete="email" value={form.email} onChange={set('email')} />
+        </div>
+
+        <div className="field">
+          <label htmlFor="password">{t('auth.password')}</label>
+          <input id="password" type="password" className="input" placeholder={t('auth.passwordMin')} autoComplete="new-password" value={form.password} onChange={set('password')} />
+        </div>
+
+        <div className="field">
+          <label htmlFor="confirm">{t('auth.confirmPassword')}</label>
+          <input id="confirm" type="password" className="input" autoComplete="new-password" value={form.confirm} onChange={set('confirm')} />
+        </div>
+
+        {error && <p className="error-text">{error}</p>}
+
+        <button type="submit" className="btn btn-primary btn-lg btn-block" disabled={busy}>
+          {busy ? t('common.loading') : t('auth.register')}
+        </button>
+
+        <p className="small" style={{ textAlign: 'center', color: 'var(--text-2)' }}>
+          {t('auth.haveAccount')}{' '}
+          <Link to="/login" className="link">
+            {t('auth.login')}
+          </Link>
+        </p>
+      </form>
+    </AuthShell>
+  )
+}

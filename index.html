@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Kantumruy+Pro:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <title>VolunteerHub</title>
+    <!-- Splash shown instantly while the app's JavaScript downloads (same look as SplashScreen.jsx) -->
+    <style>
+      .splash {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 18px;
+        background: #13263a;
+        color: #fff;
+        font-family: 'Poppins', system-ui, sans-serif;
+        z-index: 100;
+      }
+      .splash-logo {
+        font-weight: 700;
+        font-size: 30px;
+      }
+      .splash-logo span {
+        color: #4fd1b5;
+      }
+      .splash-spinner {
+        width: 34px;
+        height: 34px;
+        border: 3px solid rgba(255, 255, 255, 0.2);
+        border-top-color: #ff8a3d;
+        border-radius: 50%;
+        animation: splash-spin 0.8s linear infinite;
+      }
+      .splash-text {
+        font-family: 'Kantumruy Pro', system-ui, sans-serif;
+        font-size: 14px;
+        color: #c9d4de;
+      }
+      @keyframes splash-spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .splash-spinner {
+          animation-duration: 2.4s;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root">
+      <div class="splash" role="status" aria-label="Loading VolunteerHub">
+        <div class="splash-logo">Volunteer<span>Hub</span></div>
+        <div class="splash-spinner"></div>
+        <div class="splash-text">ចូលរួម ជួយ និងរាប់ម៉ោងស្ម័គ្រចិត្ត</div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
