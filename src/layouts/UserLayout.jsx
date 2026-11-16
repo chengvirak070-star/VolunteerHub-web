@@ -5,7 +5,9 @@ import LangSwitch from '../components/ui/LangSwitch.jsx'
 import Avatar from '../components/user/Avatar.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useLang } from '../i18n/index.jsx'
-import { notifications } from '../services/mockData.js'
+import Toast from '../components/ui/Toast.jsx'
+import { useToast } from '../hooks/useToast.js'
+import { getUnreadCount } from '../services/userService.js'
 
 // Remounted (via key) whenever the URL query changes, e.g. clicking a hashtag
 function SearchBox({ initial }) {
@@ -77,14 +79,46 @@ function UserMenu() {
   )
 }
 
+// Unread notification count for the bell: loaded on start, every minute,
+// and again when notifications are read or the notifications page is opened/left.
+function useUnreadCount(onNotificationsPage) {
+  const [count, setCount] = useState(0)
+
+  useEffect(() => {
+    let alive = true
+    const load = () =>
+      getUnreadCount()
+        .then((n) => alive && setCount(n))
+        .catch(() => {})
+    load()
+    window.addEventListener('vh-notifications-read', load)
+    const timer = setInterval(load, 60000)
+    return () => {
+      alive = false
+      window.removeEventListener('vh-notifications-read', load)
+      clearInterval(timer)
+    }
+  }, [onNotificationsPage])
+
+  return count
+}
+
 export default function UserLayout() {
   const { t } = useLang()
   const { user } = useAuth()
   const [params] = useSearchParams()
   const location = useLocation()
   const urlQ = location.pathname === '/search' ? params.get('q') || '' : ''
-  const unread = notifications.filter((n) => n.unread).length
+  const unread = useUnreadCount(location.pathname === '/notifications')
   const navCls = ({ isActive }) => `icon-btn ${isActive ? 'active' : ''}`
+
+  // Any component can call toast('message') from services/api.js
+  const [toastMessage, showToast] = useToast(3000)
+  useEffect(() => {
+    const onToast = (e) => showToast(e.detail)
+    window.addEventListener('vh-toast', onToast)
+    return () => window.removeEventListener('vh-toast', onToast)
+  }, [showToast])
 
   return (
     <>
@@ -143,6 +177,8 @@ export default function UserLayout() {
           {t('nav.profile')}
         </NavLink>
       </nav>
+
+      <Toast message={toastMessage} />
     </>
   )
 }

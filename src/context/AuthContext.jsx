@@ -50,28 +50,58 @@ const firstOpen = (() => {
 
 const wait = (ms) => new Promise((r) => setTimeout(r, ms))
 
+// The free Render server sleeps and can take ~50 s to wake up, so keep retrying for a while.
+const RETRY_EVERY_MS = 3000
+const MAX_TRIES = 25 // ≈ 75 seconds
+
 export function AuthProvider({ children }) {
-  // loading = true while the splash shows and/or we check a saved token with GET /auth/me
-  const [state, setState] = useState({ user: null, loading: Boolean(startToken) || firstOpen })
+  // loading: splash is showing / we are checking the saved token with GET /auth/me
+  // waking:  the server did not answer yet, we are retrying ("Connecting to server…")
+  // offline: gave up retrying — show a "Try again" screen, but KEEP the saved login
+  const [state, setState] = useState({
+    user: null,
+    loading: Boolean(startToken) || firstOpen,
+    waking: false,
+    offline: false,
+  })
 
   useEffect(() => {
+    let cancelled = false
+
     setUnauthorizedHandler(() => {
       clearToken()
-      setState({ user: null, loading: false })
+      setState({ user: null, loading: false, waking: false, offline: false })
     })
 
-    const checkUser = startToken
-      ? api('/auth/me')
-          .then((res) => mapUser(res.data))
-          .catch(() => {
+    async function checkUser() {
+      if (!startToken) return null
+      for (let attempt = 1; ; attempt++) {
+        try {
+          const res = await api('/auth/me')
+          return mapUser(res.data)
+        } catch (e) {
+          // Only a real "not logged in / blocked" answer logs the user out.
+          if (e.status === 401 || e.status === 403) {
             clearToken()
             return null
-          })
-      : Promise.resolve(null)
+          }
+          // Server asleep, network problem, server error: keep the token and try again.
+          if (cancelled) return null
+          if (attempt >= MAX_TRIES) throw e
+          setState((s) => ({ ...s, waking: true }))
+          await wait(RETRY_EVERY_MS)
+          if (cancelled) return null
+        }
+      }
+    }
 
-    Promise.all([checkUser, wait(firstOpen ? SPLASH_MS : 0)]).then(([user]) =>
-      setState({ user, loading: false }),
-    )
+    Promise.all([checkUser(), wait(firstOpen ? SPLASH_MS : 0)])
+      .then(([user]) => !cancelled && setState({ user, loading: false, waking: false, offline: false }))
+      .catch(() => !cancelled && setState({ user: null, loading: false, waking: false, offline: true }))
+
+    return () => {
+      cancelled = true
+    }
   }, [])
 
   const login = useCallback(async (email, password, remember) => {
@@ -100,7 +130,7 @@ export function AuthProvider({ children }) {
   }, [])
 
   const value = useMemo(
-    () => ({ user: state.user, loading: state.loading, login, register, logout }),
+    () => ({ ...state, login, register, logout }),
     [state, login, register, logout],
   )
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

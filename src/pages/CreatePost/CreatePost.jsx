@@ -8,6 +8,8 @@ import { useLang } from '../../i18n/index.jsx'
 import { searchEvents } from '../../services/eventService.js'
 import { createPost } from '../../services/postService.js'
 
+const MAX_IMAGE_MB = 5
+
 export default function CreatePost() {
   const { t } = useLang()
   const { user } = useAuth()
@@ -16,20 +18,27 @@ export default function CreatePost() {
   const [image, setImage] = useState(null)
   const [eventId, setEventId] = useState('')
   const [busy, setBusy] = useState(false)
-  const events = useAsync(() => searchEvents(), [])
+  const [error, setError] = useState('')
+  const events = useAsync(() => searchEvents({ perPage: 50 }), [])
+
+  function pickImage(file) {
+    setError('')
+    if (file && file.size > MAX_IMAGE_MB * 1024 * 1024) {
+      return setError(`The photo must be smaller than ${MAX_IMAGE_MB} MB.`)
+    }
+    setImage(file)
+  }
 
   async function submit(e) {
     e.preventDefault()
     if (!text.trim()) return
     setBusy(true)
+    setError('')
     try {
-      await createPost({
-        authorId: user.id,
-        text: text.trim(),
-        image: image ? URL.createObjectURL(image) : null,
-        eventId,
-      })
+      await createPost({ text: text.trim(), image, eventId })
       navigate('/')
+    } catch (err) {
+      setError(err.message)
     } finally {
       setBusy(false)
     }
@@ -49,10 +58,11 @@ export default function CreatePost() {
           onChange={(e) => setText(e.target.value)}
           placeholder={t('create.placeholder')}
           aria-label={t('create.title')}
+          maxLength={2000}
           autoFocus
         />
 
-        <ImageUpload value={image} onChange={setImage} />
+        <ImageUpload value={image} onChange={pickImage} />
 
         <div className="field">
           <label htmlFor="ev">{t('create.linkEvent')}</label>
@@ -66,12 +76,14 @@ export default function CreatePost() {
           </select>
         </div>
 
+        {error && <p className="error-text">{error}</p>}
+
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
           <button type="button" className="btn btn-outline" onClick={() => navigate(-1)}>
-            ✕
+            {t('create.cancel')}
           </button>
           <button type="submit" className="btn btn-primary" disabled={busy || !text.trim()}>
-            {t('create.post')}
+            {busy ? t('common.loading') : t('create.post')}
           </button>
         </div>
       </form>

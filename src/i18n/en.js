@@ -25,6 +25,9 @@ export default {
   'auth.register': 'Create account',
   'auth.haveAccount': 'Already have an account?',
   'auth.errRequired': 'Please fill in every field.',
+  'auth.errName': 'Please enter your full name.',
+  'auth.errUsername': 'Please enter a username (for example: chengvirak).',
+  'auth.errEmail': 'Please enter a valid email, like you@example.com.',
   'auth.errMatch': 'Passwords do not match.',
   'auth.errShort': 'Password must be at least 8 characters.',
   'auth.demo': 'Demo: sokha@volunteerhub.test / password',
@@ -61,17 +64,23 @@ export default {
 
   // post
   'post.likes': '{n} likes',
+  'post.like1': '{n} like',
+  'post.comment1': '{n} comment',
   'post.comments': '{n} comments',
   'post.share': 'Share',
   'post.writeComment': 'Write a comment…',
   'post.send': 'Send',
   'post.copied': 'Link copied',
+  'post.delete': 'Delete post',
+  'post.confirmDelete': 'Delete this post?',
+  'post.notFound': 'Post not found.',
 
   // event
   'event.join': 'Join event',
   'event.joined': 'Joined ✓',
   'event.leave': 'Leave event',
   'event.full': 'Full',
+  'event.closed': 'Closed',
   'event.spotsLeft': '{n} spots left',
   'event.backToFeed': 'Back to feed',
   'event.about': 'About this event',
@@ -89,6 +98,11 @@ export default {
   'event.friendsGoing': '{n} people you follow are going.',
   'event.hoursNote': 'Your {n} hours are added after the organizer confirms you attended.',
   'event.notFound': 'Event not found.',
+  'event.beFirst': 'Nobody yet. Be the first to join!',
+  'event.status.full': 'Full',
+  'event.status.closed': 'Closed',
+  'event.status.pending': 'Waiting for approval',
+  'event.status.rejected': 'Rejected',
 
   // user
   'user.follow': 'Follow',
@@ -148,10 +162,12 @@ export default {
   'create.post': 'Post',
   'create.addPhoto': 'Click to add a photo',
   'create.remove': 'Remove',
+  'create.cancel': 'Cancel',
 
   // notifications
   'notif.title': 'Notifications',
   'notif.markAll': 'Mark all as read',
+  'notif.empty': 'No notifications yet.',
 
   // hours
   'hours.title': 'My hours',
@@ -163,8 +179,10 @@ export default {
   'hours.organizer': 'Organizer',
   'hours.h': 'Hours',
   'hours.status': 'Status',
-  'hours.confirmed': 'Confirmed',
-  'hours.waiting': 'Pending',
+  'hours.status.approved': 'Approved',
+  'hours.status.pending': 'Pending',
+  'hours.status.declined': 'Declined',
+  'hours.empty': 'No hours yet. Join an event to get started.',
 
   'common.loading': 'Loading…',
   'common.comingSoon': 'Coming soon.',

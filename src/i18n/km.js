@@ -24,6 +24,9 @@ export default {
   'auth.register': 'បង្កើតគណនី',
   'auth.haveAccount': 'មានគណនីរួចហើយ?',
   'auth.errRequired': 'សូមបំពេញគ្រប់ប្រអប់។',
+  'auth.errName': 'សូមបញ្ចូលឈ្មោះពេញរបស់អ្នក។',
+  'auth.errUsername': 'សូមបញ្ចូលឈ្មោះអ្នកប្រើ (ឧ. chengvirak)។',
+  'auth.errEmail': 'សូមបញ្ចូលអ៊ីមែលត្រឹមត្រូវ ដូចជា you@example.com។',
   'auth.errMatch': 'ពាក្យសម្ងាត់មិនដូចគ្នាទេ។',
   'auth.errShort': 'ពាក្យសម្ងាត់ត្រូវមានយ៉ាងតិច ៨ តួអក្សរ។',
 
@@ -55,6 +58,8 @@ export default {
   'feed.toBadge': 'នៅសល់ {n} ម៉ោងទៀតដើម្បីទទួលបានផ្លាកសញ្ញា {goal} ម៉ោង',
 
   'post.likes': '{n} ចូលចិត្ត',
+  'post.like1': '{n} ចូលចិត្ត',
+  'post.comment1': '{n} មតិ',
   'post.comments': '{n} មតិ',
   'post.share': 'ចែករំលែក',
   'post.writeComment': 'សរសេរមតិ…',
@@ -63,6 +68,7 @@ export default {
   'event.join': 'ចូលរួម',
   'event.joined': 'បានចូលរួម ✓',
   'event.full': 'ពេញ',
+  'event.closed': 'បានបិទ',
   'event.spotsLeft': 'នៅសល់ {n} កន្លែង',
   'event.backToFeed': 'ត្រឡប់ទៅទំព័រដើម',
   'event.about': 'អំពីកម្មវិធីនេះ',

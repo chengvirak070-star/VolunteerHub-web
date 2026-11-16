@@ -61,7 +61,41 @@ export async function api(path, { method = 'GET', body } = {}) {
   return data
 }
 
-// Fake delay for parts that still use mock data (feed, events, posts — later phases).
+// (unused) fake delay helper, kept for quick experiments.
 export function mock(value, ms = 150) {
   return new Promise((resolve) => setTimeout(() => resolve(structuredClone(value)), ms))
+}
+
+/** Builds "?a=1&b=2" from an object, skipping empty values. */
+export function qs(params = {}) {
+  const p = new URLSearchParams()
+  for (const [k, v] of Object.entries(params)) {
+    if (v !== undefined && v !== null && v !== '' && v !== false) p.set(k, v === true ? '1' : v)
+  }
+  const s = p.toString()
+  return s ? `?${s}` : ''
+}
+
+/** Downloads a file (e.g. the PDF certificate) that needs the login token. */
+export async function downloadFile(path, filename) {
+  let res
+  try {
+    res = await fetch(BASE_URL + path, { headers: token ? { Authorization: `Bearer ${token}` } : {} })
+  } catch {
+    throw new ApiError('Cannot reach the server.', 0)
+  }
+  if (!res.ok) throw new ApiError(`Download failed (${res.status})`, res.status)
+  const url = URL.createObjectURL(await res.blob())
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  document.body.appendChild(a)
+  a.click()
+  a.remove()
+  setTimeout(() => URL.revokeObjectURL(url), 1000)
+}
+
+/** Shows a small message at the bottom of the screen from anywhere (see UserLayout). */
+export function toast(message) {
+  window.dispatchEvent(new CustomEvent('vh-toast', { detail: message }))
 }

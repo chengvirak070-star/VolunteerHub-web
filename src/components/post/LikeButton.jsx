@@ -1,19 +1,26 @@
 import { useState } from 'react'
 import { useLang } from '../../i18n/index.jsx'
+import { toast } from '../../services/api.js'
 import { toggleLike } from '../../services/postService.js'
 import Icon from '../ui/Icon.jsx'
 
 export default function LikeButton({ postId, liked: initLiked, likes: initLikes }) {
   const { t } = useLang()
   const [state, setState] = useState({ liked: initLiked, likes: initLikes })
+  const [busy, setBusy] = useState(false)
 
   async function handle() {
-    // optimistic update
-    setState((s) => ({ liked: !s.liked, likes: s.likes + (s.liked ? -1 : 1) }))
+    if (busy) return
+    const before = state
+    setBusy(true)
+    setState({ liked: !before.liked, likes: before.likes + (before.liked ? -1 : 1) }) // optimistic
     try {
-      setState(await toggleLike(postId))
-    } catch {
-      setState({ liked: initLiked, likes: initLikes })
+      setState(await toggleLike(postId, before.liked))
+    } catch (err) {
+      setState(before)
+      toast(err.message)
+    } finally {
+      setBusy(false)
     }
   }
 
@@ -25,7 +32,7 @@ export default function LikeButton({ postId, liked: initLiked, likes: initLikes 
       aria-pressed={state.liked}
     >
       <Icon name="heart" size={18} />
-      {t('post.likes', { n: state.likes })}
+      {t(state.likes === 1 ? 'post.like1' : 'post.likes', { n: state.likes })}
     </button>
   )
 }

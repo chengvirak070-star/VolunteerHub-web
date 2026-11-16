@@ -1,66 +1,50 @@
-import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import JoinButton from '../../components/event/JoinButton.jsx'
 import Elephant from '../../components/ui/Elephant.jsx'
 import Icon from '../../components/ui/Icon.jsx'
-import Toast from '../../components/ui/Toast.jsx'
 import Avatar from '../../components/user/Avatar.jsx'
 import FollowButton from '../../components/user/FollowButton.jsx'
 import UserName from '../../components/user/UserName.jsx'
-import { useAuth } from '../../context/AuthContext.jsx'
 import { useAsync } from '../../hooks/useAsync.js'
-import { useToast } from '../../hooks/useToast.js'
 import { useLang } from '../../i18n/index.jsx'
-import { askQuestion, getEvent, toggleSave } from '../../services/eventService.js'
-import { followingIds } from '../../services/mockData.js'
+import { toast } from '../../services/api.js'
+import { getEvent, toggleSave } from '../../services/eventService.js'
 import { compact, longDate, tintClass } from '../../utils/format.js'
 
 export default function EventDetail() {
   const { id } = useParams()
   const { t } = useLang()
-  const { user } = useAuth()
   const navigate = useNavigate()
-  const { data: event, loading, setData } = useAsync(() => getEvent(id), [id])
-  const [question, setQuestion] = useState('')
-  const [toast, showToast] = useToast()
+  const { data: event, loading, error, setData } = useAsync(() => getEvent(id), [id])
 
   if (loading && !event) return <div className="page empty">{t('common.loading')}</div>
+  if (error) return <div className="page empty">{error.message}</div>
   if (!event) return <div className="page empty">{t('event.notFound')}</div>
 
   const org = event.organizer
-  const percent = Math.round((event.joined / event.capacity) * 100)
+  const percent = Math.min(100, Math.round((event.joined / event.capacity) * 100))
   const shown = event.attendeeUsers.slice(0, 4)
   const others = Math.max(0, event.joined - shown.length)
-  // mock: everyone else on the attendee list is someone you follow
-  const friendsGoing = event.attendees.filter((uid) => uid !== user.id).length
 
-  function onJoinChange(updated) {
-    setData((e) => ({
-      ...e,
-      ...updated,
-      attendeeUsers: updated.isJoined
-        ? [{ ...user, id: 'u1' }, ...e.attendeeUsers.filter((u) => u.id !== 'u1')]
-        : e.attendeeUsers.filter((u) => u.id !== 'u1'),
-    }))
+  // After joining/leaving, reload so the attendee list and counts are fresh.
+  async function onJoinChange(updated) {
+    setData((e) => ({ ...e, ...updated, organizer: e.organizer, attendeeUsers: e.attendeeUsers, friendsGoing: e.friendsGoing }))
+    const fresh = await getEvent(id).catch(() => null)
+    if (fresh) setData(fresh)
   }
 
   async function onSave() {
-    const saved = await toggleSave(event.id)
-    setData((e) => ({ ...e, isSaved: saved }))
+    try {
+      const saved = await toggleSave(event)
+      setData((e) => ({ ...e, isSaved: saved }))
+    } catch (err) {
+      toast(err.message)
+    }
   }
 
   function onShare() {
     navigator.clipboard?.writeText(window.location.href).catch(() => {})
-    showToast(t('post.copied'))
-  }
-
-  async function onAsk(e) {
-    e.preventDefault()
-    const text = question.trim()
-    if (!text) return
-    const q = await askQuestion(event.id, user.id, text)
-    setData((ev) => ({ ...ev, questions: [...ev.questions, { ...q, user }] }))
-    setQuestion('')
+    toast(t('post.copied'))
   }
 
   return (
@@ -89,83 +73,54 @@ export default function EventDetail() {
         {/* Main column */}
         <div>
           <div style={{ display: 'flex', gap: 6, marginBottom: 8 }}>
-            {event.categories.map((c, i) => (
-              <span key={c} className={`pill ${i === 0 ? 'pill-mint' : 'pill-slate'}`}>
+            {event.categories.map((c) => (
+              <span key={c} className="pill pill-mint">
                 {t(`cat.${c}`)}
               </span>
             ))}
+            {event.status !== 'open' && <span className="pill pill-slate">{t(`event.status.${event.status}`)}</span>}
           </div>
           <h1 style={{ fontSize: 30, marginBottom: 14 }}>{event.title}</h1>
 
-          <div className="card organizer-row">
-            <Link to={`/u/${org.username}`}>
-              <Avatar user={org} size={44} />
-            </Link>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <UserName user={org} />
-              <p className="muted xs">
-                {t('user.organizer')} · {compact(org.followers)} {t('user.followers')} · {org.eventsCount}{' '}
-                {t('profile.events').toLowerCase()}
-              </p>
+          {org?.username && (
+            <div className="card organizer-row">
+              <Link to={`/u/${org.username}`}>
+                <Avatar user={org} size={44} />
+              </Link>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <UserName user={org} />
+                <p className="muted xs">
+                  {t('user.organizer')} · {compact(org.followers)} {t('user.followers')}
+                  {org.eventsCount != null && ` · ${org.eventsCount} ${t('profile.events').toLowerCase()}`}
+                </p>
+              </div>
+              <FollowButton
+                userId={org.id}
+                initial={org.isFollowing}
+                size="md"
+                onChange={(now) =>
+                  setData((e) => ({
+                    ...e,
+                    organizer: { ...e.organizer, isFollowing: now, followers: e.organizer.followers + (now ? 1 : -1) },
+                  }))
+                }
+              />
             </div>
-            <FollowButton userId={org.id} initial={followingIds.has(org.id)} size="md" />
-          </div>
+          )}
 
           <section className="detail-section">
             <h3>{t('event.about')}</h3>
-            <p>{event.description}</p>
+            <p style={{ whiteSpace: 'pre-wrap' }}>{event.description}</p>
           </section>
-
-          {event.bring?.length > 0 && (
-            <section className="detail-section">
-              <h3>{t('event.bring')}</h3>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                {event.bring.map((b) => (
-                  <span key={b} className="chip">
-                    {b}
-                  </span>
-                ))}
-              </div>
-            </section>
-          )}
 
           <section className="detail-section">
             <h3>{t('event.location')}</h3>
             <div className="map-box">
               <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <Icon name="pin" size={20} className="verified" />
-                {event.place}, {event.city}
+                {event.location}
               </span>
             </div>
-          </section>
-
-          <section className="detail-section">
-            <h3>{t('event.questions', { n: event.questions.length })}</h3>
-            {event.questions.map((q) => (
-              <div key={q.id} className="card question">
-                <Avatar user={q.user} size={32} />
-                <div>
-                  <p className="small">
-                    <strong>{q.user.name}</strong>
-                    <span className="muted">
-                      {q.userId === event.organizerId && ` · ${t('user.organizer')}`} · {q.ago}
-                    </span>
-                  </p>
-                  <p className="small">{q.text}</p>
-                </div>
-              </div>
-            ))}
-            <form className="comment-form" onSubmit={onAsk} style={{ marginTop: 4 }}>
-              <input
-                value={question}
-                onChange={(e) => setQuestion(e.target.value)}
-                placeholder={t('event.askPh')}
-                aria-label={t('event.askPh')}
-              />
-              <button type="submit" className="btn btn-dark btn-sm" disabled={!question.trim()}>
-                {t('event.ask')}
-              </button>
-            </form>
           </section>
         </div>
 
@@ -179,7 +134,7 @@ export default function EventDetail() {
               <Icon name="clock" size={18} /> {event.start} – {event.end} · {t('event.counts', { n: event.hours })}
             </p>
             <p className="info-line">
-              <Icon name="pin" size={18} /> {event.place}, {event.city}
+              <Icon name="pin" size={18} /> {event.location}
             </p>
             <div className="divider" />
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }} className="xs">
@@ -204,17 +159,21 @@ export default function EventDetail() {
 
           <div className="card card-pad">
             <h3 style={{ fontSize: 15, marginBottom: 10 }}>{t('event.whoGoing')}</h3>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div className="avatar-stack">
-                {shown.map((u) => (
-                  <Avatar key={u.id} user={u} size={32} />
-                ))}
+            {event.joined === 0 ? (
+              <p className="muted xs">{t('event.beFirst')}</p>
+            ) : (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div className="avatar-stack">
+                  {shown.map((u) => (
+                    <Avatar key={u.id} user={u} size={32} />
+                  ))}
+                </div>
+                {others > 0 && <span className="muted xs">{t('event.others', { n: others })}</span>}
               </div>
-              {others > 0 && <span className="muted xs">{t('event.others', { n: others })}</span>}
-            </div>
-            {friendsGoing > 0 && (
+            )}
+            {event.friendsGoing > 0 && (
               <p className="muted xs" style={{ marginTop: 10 }}>
-                {t('event.friendsGoing', { n: friendsGoing })}
+                {t('event.friendsGoing', { n: event.friendsGoing })}
               </p>
             )}
           </div>
@@ -225,7 +184,6 @@ export default function EventDetail() {
           </div>
         </aside>
       </div>
-      <Toast message={toast} />
     </div>
   )
 }

@@ -1,13 +1,17 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext.jsx'
+import { useAsync } from '../../hooks/useAsync.js'
 import { useLang } from '../../i18n/index.jsx'
-import { addComment } from '../../services/postService.js'
+import { toast } from '../../services/api.js'
+import { addComment, getComments } from '../../services/postService.js'
 import Avatar from '../user/Avatar.jsx'
 
-export default function CommentList({ postId, comments: initial, onAdded }) {
+// Loads the post's comments from the API when it is opened.
+export default function CommentList({ postId, onAdded }) {
   const { t } = useLang()
   const { user } = useAuth()
-  const [comments, setComments] = useState(initial)
+  const { data: comments, loading, setData } = useAsync(() => getComments(postId), [postId])
   const [text, setText] = useState('')
   const [busy, setBusy] = useState(false)
 
@@ -17,10 +21,12 @@ export default function CommentList({ postId, comments: initial, onAdded }) {
     if (!value) return
     setBusy(true)
     try {
-      const c = await addComment(postId, user.id, value)
-      setComments((list) => [...list, { ...c, user: { ...c.user, name: user.name, initials: user.initials } }])
+      const c = await addComment(postId, value)
+      setData((list) => [...(list || []), c])
       setText('')
       onAdded?.()
+    } catch (err) {
+      toast(err.message)
     } finally {
       setBusy(false)
     }
@@ -28,11 +34,14 @@ export default function CommentList({ postId, comments: initial, onAdded }) {
 
   return (
     <div className="comments">
-      {comments.map((c) => (
+      {loading && !comments && <p className="muted small">{t('common.loading')}</p>}
+      {comments?.map((c) => (
         <div className="comment" key={c.id}>
-          <Avatar user={c.user} size={30} />
+          <Link to={`/u/${c.user.username}`}>
+            <Avatar user={c.user} size={30} />
+          </Link>
           <div className="comment-bubble">
-            <strong className="small">{c.user.name}</strong>
+            <strong className="small">{c.user.name}</strong> <span className="muted xs">· {c.ago}</span>
             <p>{c.text}</p>
           </div>
         </div>
@@ -44,6 +53,7 @@ export default function CommentList({ postId, comments: initial, onAdded }) {
           onChange={(e) => setText(e.target.value)}
           placeholder={t('post.writeComment')}
           aria-label={t('post.writeComment')}
+          maxLength={1000}
         />
         <button type="submit" className="btn btn-dark btn-sm" disabled={busy || !text.trim()}>
           {t('post.send')}

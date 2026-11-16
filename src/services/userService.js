@@ -1,8 +1,6 @@
-import { api, mock } from './api.js'
+import { api, downloadFile, qs } from './api.js'
+import { mapHourLog, mapNotification } from '../utils/mappers.js'
 import { mapUser } from '../utils/user.js'
-import { followingIds, hoursLog, notifications, profileTiles, users } from './mockData.js'
-
-// ---------- Real API ----------
 
 /** GET /users/{username} — returns null when not found. */
 export async function getUserByUsername(username) {
@@ -15,64 +13,61 @@ export async function getUserByUsername(username) {
   }
 }
 
-/** "Who to follow": a few seeded accounts until a suggestions endpoint exists. */
+/** "Who to follow": the most-followed accounts you don't follow yet. */
 export async function getSuggestions() {
-  const usernames = ['readcambodia', 'darakim', 'healthfriends']
-  const list = await Promise.all(usernames.map((u) => getUserByUsername(u).catch(() => null)))
-  return list.filter((u) => u && !u.is_me)
+  const res = await api(`/search${qs({ type: 'people' })}`)
+  return res.data.people
+    .filter((u) => !u.is_following)
+    .slice(0, 3)
+    .map(mapUser)
 }
 
-/**
- * Follow / unfollow. Real users have numeric ids; ids like "u2" belong to
- * mock data still used by the feed and search (until phase 4).
- */
+export async function searchUsers(q) {
+  const res = await api(`/search${qs({ q: q.trim(), type: 'people' })}`)
+  return res.data.people.map(mapUser)
+}
+
+/** Follow / unfollow. Returns true when you now follow the user. */
 export async function toggleFollow(userId, currentlyFollowing) {
-  if (typeof userId === 'number') {
-    const res = await api(`/users/${userId}/follow`, { method: currentlyFollowing ? 'DELETE' : 'POST' })
-    return res.data.is_following
+  const res = await api(`/users/${userId}/follow`, { method: currentlyFollowing ? 'DELETE' : 'POST' })
+  return res.data.is_following
+}
+
+/** My hour logs + totals: { rows, approved, pending, attended } */
+export async function getMyHours() {
+  const res = await api('/me/hours')
+  return {
+    rows: res.data.map(mapHourLog),
+    approved: res.meta.approved_hours,
+    pending: res.meta.pending_hours,
+    attended: res.meta.events_attended,
   }
-  if (followingIds.has(userId)) followingIds.delete(userId)
-  else followingIds.add(userId)
-  return mock(followingIds.has(userId), 80)
 }
 
-// ---------- Still mock (later phases) ----------
-
-const withFollow = (u) => ({ ...u, isFollowing: followingIds.has(u.id) })
-
-export function getUserById(id) {
-  return users.find((u) => u.id === id)
+export async function getUserHours(username) {
+  const res = await api(`/users/${encodeURIComponent(username)}/hours`)
+  return res.data.map(mapHourLog)
 }
 
-export function searchUsers(q) {
-  const s = q.trim().toLowerCase()
-  return mock(
-    users
-      .filter((u) => u.id !== 'u1')
-      .filter(
-        (u) =>
-          !s ||
-          u.name.toLowerCase().includes(s) ||
-          u.bio.toLowerCase().includes(s) ||
-          (s.includes('clean') && ['u2', 'u6', 'u7'].includes(u.id)),
-      )
-      .map(withFollow),
-  )
+export function downloadCertificate(username) {
+  return downloadFile('/me/certificate', `volunteerhub-certificate-${username}.pdf`)
 }
 
-export function getProfileTiles() {
-  return mock(profileTiles)
+/** { items, unread } */
+export async function getNotifications() {
+  const res = await api('/notifications')
+  return { items: res.data.map(mapNotification), unread: res.meta.unread_count }
 }
 
-export function getHoursLog() {
-  return mock(hoursLog)
+export async function getUnreadCount() {
+  const res = await api('/notifications')
+  return res.meta.unread_count
 }
 
-export function getNotifications() {
-  return mock(notifications)
+export async function markAllNotificationsRead() {
+  await api('/notifications/read-all', { method: 'POST' })
 }
 
-export function markAllNotificationsRead() {
-  notifications.forEach((n) => (n.unread = false))
-  return mock(true, 50)
+export async function markNotificationRead(id) {
+  await api(`/notifications/${id}/read`, { method: 'POST' })
 }

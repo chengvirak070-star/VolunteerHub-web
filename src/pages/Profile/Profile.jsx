@@ -1,27 +1,40 @@
 import { useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import EventCard from '../../components/event/EventCard.jsx'
-import Toast from '../../components/ui/Toast.jsx'
 import HoursTable from '../../components/user/HoursTable.jsx'
 import ProfileHeader from '../../components/user/ProfileHeader.jsx'
 import { useAuth } from '../../context/AuthContext.jsx'
 import { useAsync } from '../../hooks/useAsync.js'
-import { useToast } from '../../hooks/useToast.js'
 import { useLang } from '../../i18n/index.jsx'
-import { getJoinedEvents } from '../../services/eventService.js'
-import { getHoursLog, getProfileTiles, getUserByUsername } from '../../services/userService.js'
+import { toast } from '../../services/api.js'
+import { getUserEvents } from '../../services/eventService.js'
+import { getUserPosts } from '../../services/postService.js'
+import { downloadCertificate, getUserByUsername, getUserHours } from '../../services/userService.js'
 import { BADGE_STEPS, nextBadge, tintClass } from '../../utils/format.js'
 
-function BadgesCard({ hours }) {
+function BadgesCard({ hours, isMe, username }) {
   const { t } = useLang()
+  const [downloading, setDownloading] = useState(false)
   const goal = nextBadge(hours)
   const steps = BADGE_STEPS.filter((s) => s <= Math.max(50, goal))
+
+  async function download() {
+    setDownloading(true)
+    try {
+      await downloadCertificate(username)
+    } catch (err) {
+      toast(err.message)
+    } finally {
+      setDownloading(false)
+    }
+  }
+
   return (
     <div className="badges-card">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h3>{t('profile.badges')}</h3>
         <span className="small" style={{ color: '#c9d4de' }}>
-          {t('profile.toNext', { n: goal - hours, goal })}
+          {t('profile.toNext', { n: Math.max(0, goal - hours), goal })}
         </span>
       </div>
       <div className="progress orange" style={{ margin: '14px 0 10px' }}>
@@ -34,14 +47,17 @@ function BadgesCard({ hours }) {
           </span>
         ))}
       </div>
-      <button
-        type="button"
-        className="btn btn-primary btn-block"
-        style={{ marginTop: 14 }}
-        onClick={() => window.print()}
-      >
-        {t('profile.certificate')}
-      </button>
+      {isMe && (
+        <button
+          type="button"
+          className="btn btn-primary btn-block"
+          style={{ marginTop: 14 }}
+          onClick={download}
+          disabled={downloading}
+        >
+          {downloading ? t('common.loading') : t('profile.certificate')}
+        </button>
+      )}
     </div>
   )
 }
@@ -52,14 +68,15 @@ export default function Profile() {
   const { user: me } = useAuth()
   const isMe = username === me.username
   const [tab, setTab] = useState('posts')
-  const [toast, showToast] = useToast()
 
   const profile = useAsync(() => getUserByUsername(username), [username])
-  const tiles = useAsync(getProfileTiles, [])
-  const joined = useAsync(getJoinedEvents, [])
-  const hours = useAsync(getHoursLog, [])
+  const posts = useAsync(() => getUserPosts(username), [username])
+  // Events and hours are only fetched when their tab is opened.
+  const events = useAsync(() => (tab === 'events' ? getUserEvents(username) : Promise.resolve(null)), [username, tab === 'events'])
+  const hours = useAsync(() => (tab === 'hours' ? getUserHours(username) : Promise.resolve(null)), [username, tab === 'hours'])
 
-  if (profile.loading && !profile.data) return <div className="page empty">{t('common.loading')}</div>
+  if (profile.loading) return <div className="page empty">{t('common.loading')}</div>
+  if (profile.error) return <div className="page empty">{profile.error.message}</div>
   if (!profile.data) return <div className="page empty">{t('profile.notFound')}</div>
 
   const user = profile.data
@@ -70,7 +87,7 @@ export default function Profile() {
 
   function share() {
     navigator.clipboard?.writeText(window.location.href).catch(() => {})
-    showToast(t('post.copied'))
+    toast(t('post.copied'))
   }
 
   return (
@@ -84,17 +101,8 @@ export default function Profile() {
             <p className="small" style={{ color: 'var(--text-2)' }}>
               {user.bio || '—'}
             </p>
-            {user.skills?.length > 0 && (
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 12 }}>
-                {user.skills.map((s) => (
-                  <span key={s} className="chip" style={{ background: 'var(--bg)' }}>
-                    {s}
-                  </span>
-                ))}
-              </div>
-            )}
           </div>
-          {user.role === 'volunteer' && <BadgesCard hours={user.hours ?? 0} />}
+          {user.role === 'volunteer' && <BadgesCard hours={user.hours ?? 0} isMe={isMe} username={user.username} />}
         </aside>
 
         <section>
@@ -118,36 +126,47 @@ export default function Profile() {
           </div>
 
           {tab === 'posts' && (
-            <div className="post-grid">
-              {(isMe ? tiles.data : tiles.data?.slice(0, 3))?.map((p) => (
-                <div key={p.id} className="card post-tile">
-                  <div className={`post-tile-img ${tintClass(p.tint)}`} />
-                  <div className="post-tile-foot">
-                    <span>{p.tag}</span>
-                    <span>{t('post.likes', { n: p.likes })}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <>
+              {posts.loading && <p className="empty">{t('common.loading')}</p>}
+              {!posts.loading && posts.data?.length === 0 && <p className="card empty">{t('feed.empty')}</p>}
+              <div className="post-grid">
+                {!posts.loading &&
+                  posts.data?.map((p) => (
+                    <Link key={p.id} to={`/posts/${p.id}`} className="card post-tile" title={p.text}>
+                      <div
+                        className={`post-tile-img ${p.image ? '' : tintClass(p.tint)}`}
+                        style={p.image ? { backgroundImage: `url(${p.image})` } : undefined}
+                      />
+                      <div className="post-tile-foot">
+                        <span>{p.hashtags[0] ? `#${p.hashtags[0]}` : p.text.slice(0, 18)}</span>
+                        <span>{t('post.likes', { n: p.likes })}</span>
+                      </div>
+                    </Link>
+                  ))}
+              </div>
+            </>
           )}
 
           {tab === 'events' && (
-            <div className="card-grid-3">
-              {joined.data?.map((e) => (
-                <EventCard key={e.id} event={e} />
-              ))}
-              {joined.data?.length === 0 && <p className="empty">—</p>}
-            </div>
+            <>
+              {(events.loading || events.data === null) && <p className="empty">{t('common.loading')}</p>}
+              {!events.loading && events.data?.length === 0 && <p className="card empty">{t('search.noEvents')}</p>}
+              <div className="card-grid-3">
+                {!events.loading && events.data?.map((e) => <EventCard key={e.id} event={e} />)}
+              </div>
+            </>
           )}
 
-          {tab === 'hours' && hours.data && (
-            <div className="card" style={{ overflow: 'hidden' }}>
-              <HoursTable rows={hours.data} />
-            </div>
-          )}
+          {tab === 'hours' &&
+            (hours.loading || !hours.data ? (
+              <p className="empty">{t('common.loading')}</p>
+            ) : (
+              <div className="card" style={{ overflow: 'hidden' }}>
+                <HoursTable rows={hours.data} />
+              </div>
+            ))}
         </section>
       </div>
-      <Toast message={toast} />
     </div>
   )
 }

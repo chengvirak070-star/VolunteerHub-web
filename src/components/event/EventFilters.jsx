@@ -1,5 +1,5 @@
 import { useLang } from '../../i18n/index.jsx'
-import { getCities } from '../../services/eventService.js'
+import { CITIES } from '../../services/eventService.js'
 
 const CATEGORIES = ['Environment', 'Education', 'Health', 'Community']
 
@@ -31,7 +31,7 @@ export default function EventFilters({ value, onChange }) {
       <h4>{t('search.locationLabel')}</h4>
       <select className="select" value={value.city} onChange={(e) => set('city', e.target.value)}>
         <option value="">{t('loc.any')}</option>
-        {getCities().map((c) => (
+        {CITIES.map((c) => (
           <option key={c} value={c}>
             {c}
           </option>

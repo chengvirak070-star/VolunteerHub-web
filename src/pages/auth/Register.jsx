@@ -17,7 +17,10 @@ export default function Register() {
   async function submit(e) {
     e.preventDefault()
     setError('')
-    if (!form.name.trim() || !form.username.trim() || !form.email || !form.password) return setError(t('auth.errRequired'))
+    if (!form.name.trim()) return setError(t('auth.errName'))
+    if (!form.username.trim()) return setError(t('auth.errUsername'))
+    if (!/^[a-z0-9_.]{3,30}$/i.test(form.username.trim())) return setError(t('auth.usernameHint'))
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) return setError(t('auth.errEmail'))
     if (form.password.length < 8) return setError(t('auth.errShort'))
     if (form.password !== form.confirm) return setError(t('auth.errMatch'))
     setBusy(true)

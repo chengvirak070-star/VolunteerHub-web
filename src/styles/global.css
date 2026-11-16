@@ -1633,3 +1633,13 @@ img {
     display: none;
   }
 }
+
+.status.approved {
+  background: var(--mint);
+  color: var(--teal-text);
+}
+
+.status.declined {
+  background: #fde2e0;
+  color: #a3261a;
+}

@@ -1,7 +1,10 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext.jsx'
 import { useLang } from '../../i18n/index.jsx'
-import { shortDate, tintClass } from '../../utils/format.js'
+import { toast } from '../../services/api.js'
+import { deletePost } from '../../services/postService.js'
+import { shortDate } from '../../utils/format.js'
 import JoinButton from '../event/JoinButton.jsx'
 import Icon from '../ui/Icon.jsx'
 import RichText from '../ui/RichText.jsx'
@@ -10,12 +13,31 @@ import UserName from '../user/UserName.jsx'
 import CommentList from './CommentList.jsx'
 import LikeButton from './LikeButton.jsx'
 
-export default function PostCard({ post, onShare }) {
+export default function PostCard({ post, onShare, onDeleted, openComments = false }) {
   const { t } = useLang()
-  const [showComments, setShowComments] = useState(false)
+  const { user } = useAuth()
+  const [showComments, setShowComments] = useState(openComments)
   const [commentCount, setCommentCount] = useState(post.commentCount)
   const [event, setEvent] = useState(post.event)
-  const hasMedia = post.image || post.tint
+  const [menuOpen, setMenuOpen] = useState(false)
+  const isMine = user?.id === post.author.id
+
+  function share() {
+    if (onShare) return onShare(post)
+    navigator.clipboard?.writeText(`${window.location.origin}/posts/${post.id}`).catch(() => {})
+    toast(t('post.copied'))
+  }
+
+  async function remove() {
+    setMenuOpen(false)
+    if (!window.confirm(t('post.confirmDelete'))) return
+    try {
+      await deletePost(post.id)
+      onDeleted?.(post.id)
+    } catch (err) {
+      toast(err.message)
+    }
+  }
 
   return (
     <article className="card post">
@@ -25,20 +47,39 @@ export default function PostCard({ post, onShare }) {
         </Link>
         <div style={{ flex: 1, minWidth: 0 }}>
           <UserName user={post.author} />
-          <p className="muted xs">{post.ago}</p>
+          <p className="muted xs">
+            <Link to={`/posts/${post.id}`}>{post.ago}</Link>
+          </p>
         </div>
-        <button type="button" className="icon-btn" aria-label="More options">
-          <Icon name="more" size={20} />
-        </button>
+        {isMine && (
+          <div style={{ position: 'relative' }}>
+            <button
+              type="button"
+              className="icon-btn"
+              aria-label="More options"
+              aria-expanded={menuOpen}
+              onClick={() => setMenuOpen((o) => !o)}
+            >
+              <Icon name="more" size={20} />
+            </button>
+            {menuOpen && (
+              <div className="card user-menu" role="menu">
+                <button type="button" onClick={remove}>
+                  <Icon name="x" size={16} /> {t('post.delete')}
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </header>
 
       <p className="post-body">
         <RichText text={post.text} />
       </p>
 
-      {hasMedia && (
-        <div className={`img-placeholder post-media ${post.image ? '' : tintClass(post.tint)}`}>
-          {post.image ? <img src={post.image} alt="" /> : <Icon name="image" size={36} strokeWidth={1.5} />}
+      {post.image && (
+        <div className="img-placeholder post-media">
+          <img src={post.image} alt="" loading="lazy" />
         </div>
       )}
 
@@ -60,21 +101,15 @@ export default function PostCard({ post, onShare }) {
         <LikeButton postId={post.id} liked={post.likedByMe} likes={post.likes} />
         <button type="button" className="post-action" onClick={() => setShowComments((s) => !s)}>
           <Icon name="message" size={18} />
-          {t('post.comments', { n: commentCount })}
+          {t(commentCount === 1 ? 'post.comment1' : 'post.comments', { n: commentCount })}
         </button>
-        <button type="button" className="post-action" onClick={() => onShare?.(post)}>
+        <button type="button" className="post-action" onClick={share}>
           <Icon name="share" size={18} />
           {t('post.share')}
         </button>
       </footer>
 
-      {showComments && (
-        <CommentList
-          postId={post.id}
-          comments={post.comments}
-          onAdded={() => setCommentCount((n) => n + 1)}
-        />
-      )}
+      {showComments && <CommentList postId={post.id} onAdded={() => setCommentCount((n) => n + 1)} />}
     </article>
   )
 }

@@ -4,12 +4,10 @@ import { EventRow } from '../../components/event/EventCard.jsx'
 import PostCard from '../../components/post/PostCard.jsx'
 import Elephant from '../../components/ui/Elephant.jsx'
 import Icon from '../../components/ui/Icon.jsx'
-import Toast from '../../components/ui/Toast.jsx'
 import Avatar from '../../components/user/Avatar.jsx'
 import FollowButton from '../../components/user/FollowButton.jsx'
 import { useAuth } from '../../context/AuthContext.jsx'
 import { useAsync } from '../../hooks/useAsync.js'
-import { useToast } from '../../hooks/useToast.js'
 import { useLang } from '../../i18n/index.jsx'
 import { getUpcoming } from '../../services/eventService.js'
 import { getFeed, getTrending } from '../../services/postService.js'
@@ -152,14 +150,8 @@ export default function Feed() {
   const navigate = useNavigate()
   const [tab, setTab] = useState('forYou')
   const feed = useAsync(() => getFeed(tab), [tab])
-  const [toast, showToast] = useToast()
   const firstName = user.name.split(' ')[0]
-
-  function share(post) {
-    const url = `${window.location.origin}/?post=${post.id}`
-    navigator.clipboard?.writeText(url).catch(() => {})
-    showToast(t('post.copied'))
-  }
+  const removePost = (id) => feed.setData((list) => list.filter((p) => p.id !== id))
 
   return (
     <div className="page">
@@ -197,15 +189,15 @@ export default function Feed() {
           </div>
 
           {feed.loading && !feed.data && <p className="empty">{t('common.loading')}</p>}
+          {feed.error && <p className="card empty">{feed.error.message}</p>}
           {feed.data?.length === 0 && <p className="card empty">{t('feed.empty')}</p>}
           {feed.data?.map((p) => (
-            <PostCard key={p.id} post={p} onShare={share} />
+            <PostCard key={p.id} post={p} onDeleted={removePost} />
           ))}
         </section>
 
         <RightColumn />
       </div>
-      <Toast message={toast} />
     </div>
   )
 }
