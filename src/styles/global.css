@@ -1643,3 +1643,25 @@ img {
   background: #fde2e0;
   color: #a3261a;
 }
+
+/* ============ Logo image ============ */
+.logo {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.logo-img {
+  display: block;
+  max-width: 100%;
+}
+
+@media (max-width: 680px) {
+  .topbar .logo-img {
+    height: 24px !important;
+  }
+}
+
+.auth-hero > .logo-img {
+  align-self: flex-start;
+}

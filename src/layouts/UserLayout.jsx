@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import Icon from '../components/ui/Icon.jsx'
+import Logo from '../components/ui/Logo.jsx'
 import LangSwitch from '../components/ui/LangSwitch.jsx'
 import Avatar from '../components/user/Avatar.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
@@ -125,7 +126,7 @@ export default function UserLayout() {
       <header className="topbar">
         <div className="topbar-inner">
           <Link to="/" className="logo" aria-label="VolunteerHub home">
-            Volunteer<span>Hub</span>
+            <Logo height={30} />
           </Link>
           <SearchBox key={urlQ} initial={urlQ} />
           <nav className="topbar-actions">

@@ -1,4 +1,5 @@
 import Elephant from '../../components/ui/Elephant.jsx'
+import Logo from '../../components/ui/Logo.jsx'
 import LangSwitch from '../../components/ui/LangSwitch.jsx'
 import TempleSilhouette from '../../components/ui/TempleSilhouette.jsx'
 import { useLang } from '../../i18n/index.jsx'
@@ -9,9 +10,7 @@ export default function AuthShell({ children }) {
   return (
     <div className="auth">
       <aside className="auth-hero">
-        <div className="logo">
-          Volunteer<span>Hub</span>
-        </div>
+        <Logo variant="light" height={36} />
         <div className="auth-hero-content">
           <Elephant size={150} />
           <h1>
