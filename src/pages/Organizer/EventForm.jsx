@@ -242,7 +242,7 @@ export default function EventForm() {
         <div className="form-row">
           <div className="field">
             <label htmlFor="place">{t('org.fPlace')}</label>
-            <input id="place" className="input" value={v.place} onChange={set('place')} maxLength={150} placeholder="Riverside" />
+            <input id="place" className="input" value={v.place} onChange={set("place")} maxLength={150} placeholder={t("org.fPlacePh")} />
           </div>
           <div className="field">
             <label htmlFor="city">{t('org.fCity')}</label>
