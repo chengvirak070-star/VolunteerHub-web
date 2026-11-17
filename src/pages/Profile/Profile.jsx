@@ -33,8 +33,10 @@ function BadgesCard({ hours, isMe, username }) {
     <div className="badges-card">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h3>{t('profile.badges')}</h3>
-        <span className="small" style={{ color: '#c9d4de' }}>
-          {t('profile.toNext', { n: Math.max(0, goal - hours), goal })}
+        <span className="small" style={{ color: '#c9d4de', textAlign: 'right' }}>
+          {hours >= BADGE_STEPS.at(-1)
+            ? t('profile.allBadges')
+            : t('profile.toNext', { n: Math.max(0, goal - hours), goal })}
         </span>
       </div>
       <div className="progress orange" style={{ margin: '14px 0 10px' }}>
@@ -43,7 +45,7 @@ function BadgesCard({ hours, isMe, username }) {
       <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
         {steps.map((s) => (
           <span key={s} className={`badge-chip ${hours >= s ? '' : 'locked'}`}>
-            {s} hrs
+            {t('profile.hrs', { n: s })}
           </span>
         ))}
       </div>

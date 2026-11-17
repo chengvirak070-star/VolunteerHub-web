@@ -129,9 +129,12 @@ export function AuthProvider({ children }) {
     setState({ user: null, loading: false })
   }, [])
 
+  // After editing the profile: replace the logged-in user (name, bio, photo…)
+  const updateUser = useCallback((user) => setState((s) => ({ ...s, user })), [])
+
   const value = useMemo(
-    () => ({ ...state, login, register, logout }),
-    [state, login, register, logout],
+    () => ({ ...state, login, register, logout, updateUser }),
+    [state, login, register, logout, updateUser],
   )
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

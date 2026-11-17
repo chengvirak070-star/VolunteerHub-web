@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { useLang } from '../../i18n/index.jsx'
 import { compact } from '../../utils/format.js'
 import TempleSilhouette from '../ui/TempleSilhouette.jsx'
@@ -32,9 +33,9 @@ export default function ProfileHeader({ user, isMe, onShare, onFollowChange }) {
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
           {isMe ? (
-            <button type="button" className="btn btn-outline">
+            <Link to="/profile/edit" className="btn btn-outline">
               {t('profile.edit')}
-            </button>
+            </Link>
           ) : (
             <FollowButton userId={user.id} initial={user.isFollowing} size="md" onChange={onFollowChange} />
           )}

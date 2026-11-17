@@ -12,6 +12,7 @@ import MyEvents from './pages/MyEvents/MyEvents.jsx'
 import MyHours from './pages/MyHours/MyHours.jsx'
 import Notifications from './pages/Notifications/Notifications.jsx'
 import PostDetail from './pages/PostDetail/PostDetail.jsx'
+import EditProfile from './pages/Profile/EditProfile.jsx'
 import Profile from './pages/Profile/Profile.jsx'
 import Search from './pages/Search/Search.jsx'
 import Settings from './pages/Settings/Settings.jsx'
@@ -51,6 +52,7 @@ export default function App() {
         <Route path="create" element={<CreatePost />} />
         <Route path="posts/:id" element={<PostDetail />} />
         <Route path="u/:username" element={<Profile />} />
+        <Route path="profile/edit" element={<EditProfile />} />
         <Route path="notifications" element={<Notifications />} />
         <Route path="my-hours" element={<MyHours />} />
         <Route path="my-events" element={<MyEvents mode="joined" />} />

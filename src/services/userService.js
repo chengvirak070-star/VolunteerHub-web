@@ -71,3 +71,17 @@ export async function markAllNotificationsRead() {
 export async function markNotificationRead(id) {
   await api(`/notifications/${id}/read`, { method: 'POST' })
 }
+
+/**
+ * Update my profile. avatar is a File or null.
+ * Sent as POST + _method=PUT because PHP can't read files from a real PUT request.
+ */
+export async function updateProfile({ name, bio, avatar }) {
+  const form = new FormData()
+  form.append('_method', 'PUT')
+  form.append('name', name)
+  form.append('bio', bio ?? '')
+  if (avatar) form.append('avatar', avatar)
+  const res = await api('/profile', { method: 'POST', body: form })
+  return mapUser(res.data)
+}
