@@ -53,14 +53,16 @@ function MiniProfile({ user }) {
 
 function SideNav() {
   const { t } = useLang()
+  const { user } = useAuth()
   const items = [
     ['/', 'home', 'nav.home'],
     ['/discover', 'compass', 'nav.discover'],
-    ['/my-events', 'calendar', 'nav.myEvents'],
-    ['/my-hours', 'clock', 'nav.myHours'],
+    // Organizers manage their own events; volunteers see the events they joined.
+    user.role === 'organizer' ? ['/organizer', 'calendar', 'org.title'] : ['/my-events', 'calendar', 'nav.myEvents'],
+    user.role === 'organizer' ? null : ['/my-hours', 'clock', 'nav.myHours'],
     ['/saved', 'bookmark', 'nav.saved'],
     ['/settings', 'sliders', 'nav.settings'],
-  ]
+  ].filter(Boolean)
   return (
     <nav className="card side-nav">
       {items.map(([to, icon, key]) => (

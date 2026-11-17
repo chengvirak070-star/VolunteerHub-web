@@ -11,6 +11,9 @@ import Feed from './pages/Feed/Feed.jsx'
 import MyEvents from './pages/MyEvents/MyEvents.jsx'
 import MyHours from './pages/MyHours/MyHours.jsx'
 import Notifications from './pages/Notifications/Notifications.jsx'
+import Attendance from './pages/Organizer/Attendance.jsx'
+import EventForm from './pages/Organizer/EventForm.jsx'
+import OrganizerEvents from './pages/Organizer/OrganizerEvents.jsx'
 import PostDetail from './pages/PostDetail/PostDetail.jsx'
 import EditProfile from './pages/Profile/EditProfile.jsx'
 import Profile from './pages/Profile/Profile.jsx'
@@ -30,6 +33,12 @@ function RequireAuth({ children }) {
   if (loading || offline) return <StartupScreen />
   if (!user) return <Navigate to="/login" replace state={{ from: location.pathname + location.search }} />
   return children
+}
+
+// Organizer pages: other roles are sent home.
+function OrganizerOnly({ children }) {
+  const { user } = useAuth()
+  return user?.role === 'organizer' ? children : <Navigate to="/" replace />
 }
 
 function GuestOnly({ children }) {
@@ -58,6 +67,10 @@ export default function App() {
         <Route path="my-events" element={<MyEvents mode="joined" />} />
         <Route path="saved" element={<MyEvents mode="saved" />} />
         <Route path="settings" element={<Settings />} />
+        <Route path="organizer" element={<OrganizerOnly><OrganizerEvents /></OrganizerOnly>} />
+        <Route path="organizer/events/new" element={<OrganizerOnly><EventForm /></OrganizerOnly>} />
+        <Route path="organizer/events/:id/edit" element={<OrganizerOnly><EventForm /></OrganizerOnly>} />
+        <Route path="organizer/events/:id/attendance" element={<OrganizerOnly><Attendance /></OrganizerOnly>} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

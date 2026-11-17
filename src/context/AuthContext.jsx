@@ -110,10 +110,11 @@ export function AuthProvider({ children }) {
     setState({ user: mapUser(res.data.user), loading: false })
   }, [])
 
-  const register = useCallback(async ({ name, username, email, password }) => {
+  // role: 'volunteer' | 'organizer' (organizers also send organizationName)
+  const register = useCallback(async ({ name, username, email, password, role = 'volunteer', organizationName }) => {
     const res = await api('/auth/register', {
       method: 'POST',
-      body: { name, username, email, password, role: 'volunteer' },
+      body: { name, username, email, password, role, organization_name: organizationName },
     })
     saveToken(res.data.token, true)
     setState({ user: mapUser(res.data.user), loading: false })

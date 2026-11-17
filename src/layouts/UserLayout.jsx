@@ -67,9 +67,20 @@ function UserMenu() {
           <Link to={`/u/${user.username}`}>
             <Icon name="user" size={18} /> {t('nav.profile')}
           </Link>
-          <Link to="/my-hours">
-            <Icon name="clock" size={18} /> {t('nav.myHours')}
-          </Link>
+          {user.role === 'organizer' ? (
+            <>
+              <Link to="/organizer">
+                <Icon name="calendar" size={18} /> {t('org.title')}
+              </Link>
+              <Link to="/organizer/events/new">
+                <Icon name="plus" size={18} /> {t('org.create')}
+              </Link>
+            </>
+          ) : (
+            <Link to="/my-hours">
+              <Icon name="clock" size={18} /> {t('nav.myHours')}
+            </Link>
+          )}
           <div className="divider" style={{ margin: '4px 0' }} />
           <button type="button" onClick={logout}>
             <Icon name="logout" size={18} /> {t('nav.logout')}
