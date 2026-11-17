@@ -52,7 +52,7 @@ export default function Register() {
   }
 
   return (
-    <AuthShell>
+    <AuthShell compact>
       <form onSubmit={submit} noValidate style={{ display: 'contents' }}>
         <div>
           <h2>{t('auth.registerTitle')}</h2>
@@ -94,28 +94,29 @@ export default function Register() {
               onChange={set('organization')}
               maxLength={150}
             />
-            <span className="muted xs">{t('auth.orgApprovalNote')}</span>
           </div>
         )}
 
-        <div className="field">
-          <label htmlFor="name">{isOrganizer ? t('auth.contactName') : t('auth.fullName')}</label>
-          <input id="name" className="input" placeholder={t('auth.fullNamePh')} autoComplete="name" value={form.name} onChange={set('name')} />
-        </div>
+        <div className="auth-two">
+          <div className="field">
+            <label htmlFor="name">{isOrganizer ? t('auth.contactName') : t('auth.fullName')}</label>
+            <input id="name" className="input" placeholder={t('auth.fullNamePh')} autoComplete="name" value={form.name} onChange={set('name')} />
+          </div>
 
-        <div className="field">
-          <label htmlFor="username">{t('auth.username')}</label>
-          <input
-            id="username"
-            className="input"
-            placeholder="chengvirak"
-            autoComplete="off"
-            autoCapitalize="none"
-            spellCheck={false}
-            value={form.username}
-            onChange={set('username')}
-          />
-          <span className="muted xs">{t('auth.usernameHint')}</span>
+          <div className="field">
+            <label htmlFor="username">{t('auth.username')}</label>
+            <input
+              id="username"
+              className="input"
+              placeholder="chengvirak"
+              title={t('auth.usernameHint')}
+              autoComplete="off"
+              autoCapitalize="none"
+              spellCheck={false}
+              value={form.username}
+              onChange={set('username')}
+            />
+          </div>
         </div>
 
         <div className="field">
@@ -123,14 +124,16 @@ export default function Register() {
           <input id="email" type="email" className="input" placeholder="you@example.com" autoComplete="email" value={form.email} onChange={set('email')} />
         </div>
 
-        <div className="field">
-          <label htmlFor="password">{t('auth.password')}</label>
-          <input id="password" type="password" className="input" placeholder={t('auth.passwordMin')} autoComplete="new-password" value={form.password} onChange={set('password')} />
-        </div>
+        <div className="auth-two">
+          <div className="field">
+            <label htmlFor="password">{t('auth.password')}</label>
+            <input id="password" type="password" className="input" placeholder={t('auth.passwordMin')} autoComplete="new-password" value={form.password} onChange={set('password')} />
+          </div>
 
-        <div className="field">
-          <label htmlFor="confirm">{t('auth.confirmPassword')}</label>
-          <input id="confirm" type="password" className="input" autoComplete="new-password" value={form.confirm} onChange={set('confirm')} />
+          <div className="field">
+            <label htmlFor="confirm">{t('auth.confirmPassword')}</label>
+            <input id="confirm" type="password" className="input" autoComplete="new-password" value={form.confirm} onChange={set('confirm')} />
+          </div>
         </div>
 
         {error && <p className="error-text">{error}</p>}

@@ -31,7 +31,7 @@ export default {
   'auth.roleVolunteer': 'អ្នកស្ម័គ្រចិត្ត',
   'auth.roleVolunteerHint': 'ចូលរួមកម្មវិធី និងរាប់ម៉ោងរបស់ខ្ញុំ',
   'auth.roleOrganizer': 'អ្នករៀបចំ',
-  'auth.roleOrganizerHint': 'ក្លឹប អង្គការ ឬសាលារៀនដែលបង្កើតកម្មវិធី',
+  'auth.roleOrganizerHint': 'ក្លឹប អង្គការ ឬសាលារៀន · ត្រូវអនុម័តដោយអ្នកគ្រប់គ្រង',
   'auth.orgName': 'ឈ្មោះអង្គការ',
   'auth.orgApprovalNote': 'អ្នកគ្រប់គ្រងនឹងពិនិត្យអង្គការថ្មី មុនពេលអាចបង្កើតកម្មវិធី។',
   'auth.contactName': 'ឈ្មោះរបស់អ្នក (អ្នកទំនាក់ទំនង)',

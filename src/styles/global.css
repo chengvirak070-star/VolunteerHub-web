@@ -1781,3 +1781,59 @@ img {
     justify-content: flex-end;
   }
 }
+
+/* ============ Compact auth card (Register fits on one screen) ============ */
+.auth-two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.auth-card.compact {
+  padding: 24px 28px;
+  gap: 8px;
+}
+
+.auth-card.compact h2 {
+  font-size: 22px;
+}
+
+.auth-card.compact .field {
+  gap: 4px;
+}
+
+.auth-card.compact .field label {
+  font-size: 13px;
+}
+
+.auth-card.compact .input {
+  height: 40px;
+  font-size: 14px;
+}
+
+.auth-card.compact .btn-lg {
+  height: 44px;
+}
+
+.auth-card.compact .role-switch button {
+  padding: 7px 10px;
+}
+
+/* Wider box when the form has two columns */
+.auth-box:has(.auth-card.compact) {
+  max-width: 460px;
+}
+
+.auth-box:has(.auth-card.compact) .lang-switch {
+  margin-bottom: 8px;
+}
+
+.auth-side:has(.auth-card.compact) {
+  padding: 16px;
+}
+
+@media (max-width: 420px) {
+  .auth-two {
+    grid-template-columns: 1fr;
+  }
+}

@@ -5,7 +5,8 @@ import TempleSilhouette from '../../components/ui/TempleSilhouette.jsx'
 import { useLang } from '../../i18n/index.jsx'
 
 // Left navy hero + right form column, shared by Login and Register.
-export default function AuthShell({ children }) {
+// compact: tighter spacing so longer forms (Register) fit on one screen
+export default function AuthShell({ children, compact = false }) {
   const { t } = useLang()
   return (
     <div className="auth">
@@ -28,7 +29,7 @@ export default function AuthShell({ children }) {
       <section className="auth-side">
         <div className="auth-box">
           <LangSwitch />
-          <div className="card auth-card">{children}</div>
+          <div className={`card auth-card ${compact ? 'compact' : ''}`}>{children}</div>
         </div>
       </section>
     </div>

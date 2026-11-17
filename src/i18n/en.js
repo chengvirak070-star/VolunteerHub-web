@@ -32,7 +32,7 @@ export default {
   'auth.roleVolunteer': 'Volunteer',
   'auth.roleVolunteerHint': 'Join events and count my hours',
   'auth.roleOrganizer': 'Organizer',
-  'auth.roleOrganizerHint': 'Club, NGO or school that posts events',
+  'auth.roleOrganizerHint': 'Club, NGO or school · approved by an admin',
   'auth.orgName': 'Organization name',
   'auth.orgNamePh': 'Green Mekong Club',
   'auth.orgApprovalNote': 'An admin checks new organizations before they can post events.',
