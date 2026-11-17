@@ -5,9 +5,7 @@ import { useAuth } from '../../context/AuthContext.jsx'
 import { useLang } from '../../i18n/index.jsx'
 import { toast } from '../../services/api.js'
 import { updateProfile } from '../../services/userService.js'
-
-const MAX_MB = 5
-const TYPES = ['image/jpeg', 'image/png', 'image/webp']
+import { shrinkImage } from '../../utils/image.js'
 
 export default function EditProfile() {
   const { t } = useLang()
@@ -24,14 +22,17 @@ export default function EditProfile() {
   const preview = useMemo(() => (avatar ? URL.createObjectURL(avatar) : null), [avatar])
   useEffect(() => () => preview && URL.revokeObjectURL(preview), [preview])
 
-  function pick(e) {
+  async function pick(e) {
     const file = e.target.files?.[0]
     e.target.value = ''
     if (!file) return
-    if (!TYPES.includes(file.type)) return setError(t('profile.photoHint'))
-    if (file.size > MAX_MB * 1024 * 1024) return setError(t('profile.photoHint'))
     setError('')
-    setAvatar(file)
+    try {
+      // Big photos are scaled down here, so any size from a phone works.
+      setAvatar(await shrinkImage(file, 600))
+    } catch (err) {
+      setError(err.message)
+    }
   }
 
   async function submit(e) {
@@ -70,7 +71,7 @@ export default function EditProfile() {
                 {t('profile.photoHint')}
               </p>
             </div>
-            <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" hidden onChange={pick} />
+            <input ref={fileRef} type="file" accept="image/*" hidden onChange={pick} />
           </div>
         </div>
 

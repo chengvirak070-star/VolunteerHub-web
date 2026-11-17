@@ -106,7 +106,7 @@ export default {
   'profile.bioPh': 'តើអ្នកចូលចិត្តជួយអ្វីខ្លះ?',
   'profile.photo': 'រូបប្រវត្តិរូប',
   'profile.changePhoto': 'ប្តូររូប',
-  'profile.photoHint': 'JPG, PNG ឬ WebP មិនលើស 5 MB',
+  'profile.photoHint': 'រូបថតណាក៏បាន។ រូបធំនឹងត្រូវបង្រួមដោយស្វ័យប្រវត្តិ។',
   'profile.save': 'រក្សាទុក',
   'profile.saved': 'បានរក្សាទុកប្រវត្តិរូប',
   'profile.allBadges': 'ទទួលបានផ្លាកសញ្ញាទាំងអស់!',

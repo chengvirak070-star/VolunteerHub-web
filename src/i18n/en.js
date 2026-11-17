@@ -129,7 +129,7 @@ export default {
   'profile.bioPh': 'What do you like to help with?',
   'profile.photo': 'Profile photo',
   'profile.changePhoto': 'Change photo',
-  'profile.photoHint': 'JPG, PNG or WebP, up to 5 MB',
+  'profile.photoHint': 'Any photo. Big photos are made smaller automatically.',
   'profile.save': 'Save',
   'profile.saved': 'Profile saved',
   'profile.allBadges': 'All badges earned!',

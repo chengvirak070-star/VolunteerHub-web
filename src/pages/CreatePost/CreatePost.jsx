@@ -7,8 +7,9 @@ import { useAsync } from '../../hooks/useAsync.js'
 import { useLang } from '../../i18n/index.jsx'
 import { searchEvents } from '../../services/eventService.js'
 import { createPost } from '../../services/postService.js'
+import { shrinkImage } from '../../utils/image.js'
 
-const MAX_IMAGE_MB = 5
+
 
 export default function CreatePost() {
   const { t } = useLang()
@@ -21,12 +22,15 @@ export default function CreatePost() {
   const [error, setError] = useState('')
   const events = useAsync(() => searchEvents({ perPage: 50 }), [])
 
-  function pickImage(file) {
+  async function pickImage(file) {
     setError('')
-    if (file && file.size > MAX_IMAGE_MB * 1024 * 1024) {
-      return setError(`The photo must be smaller than ${MAX_IMAGE_MB} MB.`)
+    if (!file) return setImage(null)
+    try {
+      // Big phone photos are scaled down before upload.
+      setImage(await shrinkImage(file, 1600))
+    } catch (err) {
+      setError(err.message)
     }
-    setImage(file)
   }
 
   async function submit(e) {

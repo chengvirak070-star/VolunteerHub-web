@@ -1665,3 +1665,19 @@ img {
 .auth-hero > .logo-img {
   align-self: flex-start;
 }
+
+/* Profile photo: show the full circle on top of the green cover, with a white ring */
+.profile-main .avatar {
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 0 0 5px #fff;
+}
+
+/* Photo avatars: crop the square picture to the circle */
+.avatar {
+  overflow: hidden;
+}
+
+.avatar img {
+  border-radius: 50%;
+}
