@@ -8,12 +8,13 @@ import UserName from '../../components/user/UserName.jsx'
 import { useAsync } from '../../hooks/useAsync.js'
 import { useLang } from '../../i18n/index.jsx'
 import { toast } from '../../services/api.js'
+import { categoryName } from '../../services/categoryService.js'
 import { getEvent, toggleSave } from '../../services/eventService.js'
 import { compact, longDate, tintClass } from '../../utils/format.js'
 
 export default function EventDetail() {
   const { id } = useParams()
-  const { t } = useLang()
+  const { t, lang } = useLang()
   const navigate = useNavigate()
   const { data: event, loading, error, setData } = useAsync(() => getEvent(id), [id])
 
@@ -73,11 +74,7 @@ export default function EventDetail() {
         {/* Main column */}
         <div>
           <div style={{ display: 'flex', gap: 6, marginBottom: 8 }}>
-            {event.categories.map((c) => (
-              <span key={c} className="pill pill-mint">
-                {t(`cat.${c}`)}
-              </span>
-            ))}
+            {event.category && <span className="pill pill-mint">{categoryName(event.category, lang)}</span>}
             {event.status !== 'open' && <span className="pill pill-slate">{t(`event.status.${event.status}`)}</span>}
           </div>
           <h1 style={{ fontSize: 30, marginBottom: 14 }}>{event.title}</h1>

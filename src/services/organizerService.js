@@ -3,11 +3,6 @@ import { api } from './api.js'
 import { mapEvent } from '../utils/mappers.js'
 import { mapUser } from '../utils/user.js'
 
-export async function getCategories() {
-  const res = await api('/categories')
-  return res.data
-}
-
 export async function getMyOrganizedEvents() {
   const res = await api('/organizer/events')
   return res.data.map(mapEvent)

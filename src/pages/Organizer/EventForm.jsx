@@ -5,7 +5,8 @@ import { useAsync } from '../../hooks/useAsync.js'
 import { useLang } from '../../i18n/index.jsx'
 import { toast } from '../../services/api.js'
 import { CITIES } from '../../services/eventService.js'
-import { createEvent, getCategories, getEventRaw, updateEvent } from '../../services/organizerService.js'
+import { categoryName, createCategory, getCategories } from '../../services/categoryService.js'
+import { createEvent, getEventRaw, updateEvent } from '../../services/organizerService.js'
 import { shrinkImage } from '../../utils/image.js'
 import { localDate } from '../../utils/mappers.js'
 
@@ -43,9 +44,13 @@ const EMPTY = {
 export default function EventForm() {
   const { id } = useParams()
   const isEdit = Boolean(id)
-  const { t } = useLang()
+  const { t, lang } = useLang()
   const navigate = useNavigate()
   const categories = useAsync(getCategories, [])
+  // "+ Add new category…" mini form
+  const [newCat, setNewCat] = useState(null) // null = closed, otherwise { en, km }
+  const [catBusy, setCatBusy] = useState(false)
+  const [catError, setCatError] = useState('')
   const existing = useAsync(() => (isEdit ? getEventRaw(id) : Promise.resolve(null)), [id])
 
   const [v, setV] = useState(EMPTY)
@@ -80,8 +85,31 @@ export default function EventForm() {
   const firstCategory = categories.data?.[0]?.id
   const categoryId = v.categoryId || (firstCategory ? String(firstCategory) : '')
 
+  async function addCategory() {
+    setCatError('')
+    if (!newCat?.en.trim()) return setCatError(t('org.catErrName'))
+    setCatBusy(true)
+    try {
+      const cat = await createCategory(newCat.en.trim(), newCat.km.trim())
+      // Put it in the list (if new) and select it
+      categories.setData((list) => (list?.some((c) => c.id === cat.id) ? list : [...(list || []), cat]))
+      setV((old) => ({ ...old, categoryId: String(cat.id) }))
+      setNewCat(null)
+      toast(t('org.catAdded', { name: categoryName(cat, lang) }))
+    } catch (err) {
+      setCatError(err.message)
+    } finally {
+      setCatBusy(false)
+    }
+  }
+
   const set = (k) => (e) => {
     const value = e.target.value
+    if (k === 'categoryId' && value === '__new') {
+      setNewCat({ en: '', km: '' })
+      setCatError('')
+      return
+    }
     setV((old) => {
       const next = { ...old, [k]: value }
       // Hours follow the start/end time until the organizer types their own number
@@ -155,13 +183,55 @@ export default function EventForm() {
 
         <div className="field">
           <label htmlFor="cat">{t('search.category')}</label>
-          <select id="cat" className="select" value={categoryId} onChange={set('categoryId')}>
+          <select id="cat" className="select" value={newCat ? '__new' : categoryId} onChange={set('categoryId')}>
             {categories.data?.map((c) => (
               <option key={c.id} value={c.id}>
-                {c.name_en} · {c.name_km}
+                {c.name_en === c.name_km ? c.name_en : `${c.name_en} · ${c.name_km}`}
               </option>
             ))}
+            <option value="__new">{t('org.catNew')}</option>
           </select>
+
+          {newCat && (
+            <div className="new-category">
+              <div className="form-row">
+                <div className="field">
+                  <label htmlFor="cat-en">{t('org.catNameEn')}</label>
+                  <input
+                    id="cat-en"
+                    className="input"
+                    placeholder="Animal care"
+                    maxLength={50}
+                    autoFocus
+                    value={newCat.en}
+                    onChange={(e) => setNewCat((c) => ({ ...c, en: e.target.value }))}
+                    onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addCategory())}
+                  />
+                </div>
+                <div className="field">
+                  <label htmlFor="cat-km">{t('org.catNameKm')}</label>
+                  <input
+                    id="cat-km"
+                    className="input"
+                    placeholder="ថែទាំសត្វ"
+                    maxLength={50}
+                    value={newCat.km}
+                    onChange={(e) => setNewCat((c) => ({ ...c, km: e.target.value }))}
+                    onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addCategory())}
+                  />
+                </div>
+              </div>
+              {catError && <p className="error-text">{catError}</p>}
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+                <button type="button" className="btn btn-outline btn-sm" onClick={() => setNewCat(null)}>
+                  {t('create.cancel')}
+                </button>
+                <button type="button" className="btn btn-dark btn-sm" onClick={addCategory} disabled={catBusy}>
+                  {catBusy ? t('common.loading') : t('org.catAdd')}
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="field">

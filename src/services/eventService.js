@@ -6,7 +6,7 @@ export const CITIES = ['Phnom Penh', 'Siem Reap', 'Battambang', 'Kampot', 'Kep']
 
 /**
  * GET /events
- * filters: { q, categories: ['Environment', ...], when: 'any'|'week'|'month', city, freeOnly, perPage }
+ * filters: { q, categories: ['environment', ...] (slugs), when: 'any'|'week'|'month', city, freeOnly, perPage }
  */
 export async function searchEvents({ q = '', categories = [], when = 'any', city = '', freeOnly = false, perPage } = {}) {
   let to
@@ -20,7 +20,7 @@ export async function searchEvents({ q = '', categories = [], when = 'any', city
   const res = await api(
     `/events${qs({
       search: q.trim(),
-      category: categories.map((c) => c.toLowerCase()).join(','),
+      category: categories.join(','),
       location: city,
       to,
       has_spots: freeOnly,

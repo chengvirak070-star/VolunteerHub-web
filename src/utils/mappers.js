@@ -63,7 +63,7 @@ export function mapEvent(e) {
     image: e.cover_url,
     tint: TINT_BY_CATEGORY[e.category?.slug] || 'mint',
     category: e.category,
-    categories: e.category ? [e.category.name_en] : [],
+
     organizer: owner
       ? {
           ...mapUser({

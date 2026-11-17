@@ -1,25 +1,26 @@
+import { useAsync } from '../../hooks/useAsync.js'
 import { useLang } from '../../i18n/index.jsx'
+import { categoryName, getCategories } from '../../services/categoryService.js'
 import { CITIES } from '../../services/eventService.js'
 
-const CATEGORIES = ['Environment', 'Education', 'Health', 'Community']
-
 /**
- * value: { categories: string[], when: 'any'|'week'|'month', city: string, freeOnly: boolean }
+ * value: { categories: string[] (slugs), when: 'any'|'week'|'month', city: string, freeOnly: boolean }
  */
 export default function EventFilters({ value, onChange }) {
-  const { t } = useLang()
+  const { t, lang } = useLang()
+  const categories = useAsync(getCategories, [])
   const set = (k, v) => onChange({ ...value, [k]: v })
-  const toggleCat = (c) =>
-    set('categories', value.categories.includes(c) ? value.categories.filter((x) => x !== c) : [...value.categories, c])
+  const toggleCat = (slug) =>
+    set('categories', value.categories.includes(slug) ? value.categories.filter((x) => x !== slug) : [...value.categories, slug])
 
   return (
     <aside className="card filters sticky-col">
       <h3 style={{ fontSize: 16 }}>{t('search.filters')}</h3>
       <h4>{t('search.category')}</h4>
-      {CATEGORIES.map((c) => (
-        <label key={c} className="checkbox">
-          <input type="checkbox" checked={value.categories.includes(c)} onChange={() => toggleCat(c)} />
-          {t(`cat.${c}`)}
+      {categories.data?.map((c) => (
+        <label key={c.slug} className="checkbox">
+          <input type="checkbox" checked={value.categories.includes(c.slug)} onChange={() => toggleCat(c.slug)} />
+          {categoryName(c, lang)}
         </label>
       ))}
       <h4>{t('search.when')}</h4>
