@@ -48,6 +48,8 @@ export function mapEvent(e) {
     title: e.title,
     description: e.description,
     location: e.location,
+    lat: e.latitude ?? null,
+    lng: e.longitude ?? null,
     ...splitLocation(e.location),
     date: localDate(start),
     start: timeStr(start),

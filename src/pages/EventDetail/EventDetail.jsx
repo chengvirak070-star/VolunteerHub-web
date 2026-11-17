@@ -2,6 +2,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import JoinButton from '../../components/event/JoinButton.jsx'
 import Elephant from '../../components/ui/Elephant.jsx'
 import Icon from '../../components/ui/Icon.jsx'
+import MapView from '../../components/ui/MapView.jsx'
 import Avatar from '../../components/user/Avatar.jsx'
 import FollowButton from '../../components/user/FollowButton.jsx'
 import UserName from '../../components/user/UserName.jsx'
@@ -11,6 +12,7 @@ import { toast } from '../../services/api.js'
 import { categoryName } from '../../services/categoryService.js'
 import { getEvent, toggleSave } from '../../services/eventService.js'
 import { compact, longDate, tintClass } from '../../utils/format.js'
+import { googleDirectionsUrl, googleMapsUrl } from '../../utils/maps.js'
 
 export default function EventDetail() {
   const { id } = useParams()
@@ -112,11 +114,28 @@ export default function EventDetail() {
 
           <section className="detail-section">
             <h3>{t('event.location')}</h3>
-            <div className="map-box">
-              <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <Icon name="pin" size={20} className="verified" />
-                {event.location}
+            {event.lat != null ? (
+              <MapView position={[event.lat, event.lng]} zoom={16} height={240} />
+            ) : (
+              <div className="map-box">
+                <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <Icon name="pin" size={20} className="verified" />
+                  {event.location}
+                </span>
+              </div>
+            )}
+            <div className="map-actions">
+              <span className="small">
+                <Icon name="pin" size={16} className="verified" /> {event.location}
               </span>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <a className="btn btn-outline btn-sm" href={googleMapsUrl(event.lat, event.lng, event.location)} target="_blank" rel="noreferrer">
+                  {t('map.openGoogle')}
+                </a>
+                <a className="btn btn-dark btn-sm" href={googleDirectionsUrl(event.lat, event.lng, event.location)} target="_blank" rel="noreferrer">
+                  {t('map.directions')}
+                </a>
+              </div>
             </div>
           </section>
         </div>

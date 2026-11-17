@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import LocationPicker from '../../components/event/LocationPicker.jsx'
 import ImageUpload from '../../components/post/ImageUpload.jsx'
 import { useAsync } from '../../hooks/useAsync.js'
 import { useLang } from '../../i18n/index.jsx'
@@ -55,6 +56,7 @@ export default function EventForm() {
 
   const [v, setV] = useState(EMPTY)
   const [cover, setCover] = useState(null)
+  const [pin, setPin] = useState(null) // map location { lat, lng }
   const [hoursTouched, setHoursTouched] = useState(isEdit)
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
@@ -79,6 +81,7 @@ export default function EventForm() {
       hours: loaded.hours,
       capacity: loaded.capacity,
     })
+    setPin(loaded.latitude != null ? { lat: loaded.latitude, lng: loaded.longitude } : null)
   }, [loaded])
 
   // Default category = first one
@@ -151,6 +154,8 @@ export default function EventForm() {
         hours: v.hours,
         capacity: v.capacity,
         cover,
+        latitude: pin?.lat ?? '',
+        longitude: pin?.lng ?? '',
       }
       if (isEdit) {
         await updateEvent(id, values)
@@ -254,6 +259,11 @@ export default function EventForm() {
               ))}
             </select>
           </div>
+        </div>
+
+        <div className="field">
+          <span style={{ fontSize: 14, fontWeight: 500 }}>{t('map.label')}</span>
+          <LocationPicker value={pin} onChange={setPin} city={v.city} />
         </div>
 
         <div className="form-row three">

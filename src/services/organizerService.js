@@ -30,6 +30,9 @@ function toForm(values, method) {
   form.append('hours', values.hours)
   form.append('capacity', values.capacity)
   if (values.cover) form.append('cover', values.cover)
+  // Map pin (empty = no pin)
+  form.append('latitude', values.latitude ?? '')
+  form.append('longitude', values.longitude ?? '')
   return form
 }
 
