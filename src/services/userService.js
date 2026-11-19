@@ -85,3 +85,17 @@ export async function updateProfile({ name, bio, avatar }) {
   const res = await api('/profile', { method: 'POST', body: form })
   return mapUser(res.data)
 }
+
+/**
+ * People who follow a user (type 'followers') or whom they follow (type 'following').
+ * Returns { users, page, lastPage, total }.
+ */
+export async function getFollowList(username, type, page = 1) {
+  const res = await api(`/users/${encodeURIComponent(username)}/${type}${qs({ page })}`)
+  return {
+    users: res.data.map(mapUser),
+    page: res.meta.current_page,
+    lastPage: res.meta.last_page,
+    total: res.meta.total,
+  }
+}

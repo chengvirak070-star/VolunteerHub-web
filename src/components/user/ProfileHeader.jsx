@@ -6,15 +6,16 @@ import Icon from '../ui/Icon.jsx'
 import Avatar from './Avatar.jsx'
 import FollowButton from './FollowButton.jsx'
 
-export default function ProfileHeader({ user, isMe, onShare, onFollowChange }) {
+export default function ProfileHeader({ user, isMe, onShare, onFollowChange, onOpenList }) {
   const { t } = useLang()
   const role = user.role === 'organizer' ? t('user.organizer') : t('user.volunteer')
 
+  // Followers / Following are buttons that open the list of people
   const stats = [
     { label: t('profile.hours'), value: user.hours ?? '—' },
     { label: t('profile.events'), value: user.eventsCount ?? 0 },
-    { label: t('profile.followers'), value: compact(user.followers ?? 0) },
-    { label: t('profile.following'), value: compact(user.following ?? 0) },
+    { label: t('profile.followers'), value: compact(user.followers ?? 0), list: 'followers' },
+    { label: t('profile.following'), value: compact(user.following ?? 0), list: 'following' },
   ]
 
   return (
@@ -45,12 +46,19 @@ export default function ProfileHeader({ user, isMe, onShare, onFollowChange }) {
         </div>
       </div>
       <div className="profile-stats">
-        {stats.map((s) => (
-          <div key={s.label}>
-            <b>{s.value}</b>
-            <span>{s.label}</span>
-          </div>
-        ))}
+        {stats.map((s) =>
+          s.list && onOpenList ? (
+            <button key={s.label} type="button" className="stat-btn" onClick={() => onOpenList(s.list)}>
+              <b>{s.value}</b>
+              <span>{s.label}</span>
+            </button>
+          ) : (
+            <div key={s.label}>
+              <b>{s.value}</b>
+              <span>{s.label}</span>
+            </div>
+          ),
+        )}
       </div>
     </section>
   )

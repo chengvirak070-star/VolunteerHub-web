@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import EventCard from '../../components/event/EventCard.jsx'
 import HoursTable from '../../components/user/HoursTable.jsx'
+import FollowListDialog from '../../components/user/FollowListDialog.jsx'
 import ProfileHeader from '../../components/user/ProfileHeader.jsx'
 import { useAuth } from '../../context/AuthContext.jsx'
 import { useAsync } from '../../hooks/useAsync.js'
@@ -70,6 +71,7 @@ export default function Profile() {
   const { user: me } = useAuth()
   const isMe = username === me.username
   const [tab, setTab] = useState('posts')
+  const [followList, setFollowList] = useState(null) // 'followers' | 'following' | null
 
   const profile = useAsync(() => getUserByUsername(username), [username])
   const posts = useAsync(() => getUserPosts(username), [username])
@@ -92,9 +94,30 @@ export default function Profile() {
     toast(t('post.copied'))
   }
 
+  // Following/unfollowing someone inside the list changes MY "Following" number,
+  // and this profile's "Followers" number if I (un)followed the profile owner.
+  function onListFollowChange(person, now) {
+    const delta = now ? 1 : -1
+    profile.setData((u) => ({
+      ...u,
+      following: isMe ? u.following + delta : u.following,
+      followers: person.id === u.id ? u.followers + delta : u.followers,
+      isFollowing: person.id === u.id ? now : u.isFollowing,
+    }))
+  }
+
   return (
     <div className="page page-narrow">
-      <ProfileHeader user={user} isMe={isMe} onShare={share} onFollowChange={onFollowChange} />
+      <ProfileHeader user={user} isMe={isMe} onShare={share} onFollowChange={onFollowChange} onOpenList={setFollowList} />
+      {followList && (
+        <FollowListDialog
+          username={user.username}
+          name={user.name}
+          type={followList}
+          onClose={() => setFollowList(null)}
+          onFollowChange={onListFollowChange}
+        />
+      )}
 
       <div className="profile-grid">
         <aside style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>

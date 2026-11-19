@@ -245,6 +245,12 @@ export default {
   'profile.posts': 'Posts',
   'profile.hoursTab': 'Hours',
   'profile.notFound': 'User not found.',
+  'follow.followersOf': 'People who follow {name}',
+  'follow.followingOf': 'People {name} follows',
+  'follow.noFollowers': 'No followers yet.',
+  'follow.noFollowing': 'Not following anyone yet.',
+  'follow.more': 'Show more ({n})',
+  'follow.you': 'You',
 
   // search
   'search.filters': 'Filters',

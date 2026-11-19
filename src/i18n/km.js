@@ -201,6 +201,12 @@ export default {
   'profile.certificate': 'ទាញយកវិញ្ញាបនបត្រម៉ោង',
   'profile.posts': 'ប្រកាស',
   'profile.hoursTab': 'ម៉ោង',
+  'follow.followersOf': 'អ្នកដែលតាមដាន {name}',
+  'follow.followingOf': 'អ្នកដែល {name} តាមដាន',
+  'follow.noFollowers': 'មិនទាន់មានអ្នកតាមដាននៅឡើយ។',
+  'follow.noFollowing': 'មិនទាន់តាមដាននរណាម្នាក់នៅឡើយ។',
+  'follow.more': 'បង្ហាញបន្ថែម ({n})',
+  'follow.you': 'អ្នក',
 
   'search.filters': 'តម្រង',
   'search.category': 'ប្រភេទ',
