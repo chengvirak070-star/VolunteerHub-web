@@ -2088,3 +2088,22 @@ img {
   top: 8px;
   right: 8px;
 }
+
+/* Small "Report" link under a comment */
+.comment-report {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin: 3px 0 0 12px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 12px;
+  color: var(--text-3);
+  cursor: pointer;
+}
+
+.comment-report:hover {
+  color: #c0392b;
+  text-decoration: underline;
+}

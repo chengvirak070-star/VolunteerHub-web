@@ -5,7 +5,9 @@ import { useAsync } from '../../hooks/useAsync.js'
 import { useLang } from '../../i18n/index.jsx'
 import { toast } from '../../services/api.js'
 import { addComment, getComments } from '../../services/postService.js'
+import Icon from '../ui/Icon.jsx'
 import Avatar from '../user/Avatar.jsx'
+import ReportDialog from './ReportDialog.jsx'
 
 // Loads the post's comments from the API when it is opened.
 export default function CommentList({ postId, onAdded }) {
@@ -14,6 +16,7 @@ export default function CommentList({ postId, onAdded }) {
   const { data: comments, loading, setData } = useAsync(() => getComments(postId), [postId])
   const [text, setText] = useState('')
   const [busy, setBusy] = useState(false)
+  const [reportingId, setReportingId] = useState(null) // comment being reported
 
   async function submit(e) {
     e.preventDefault()
@@ -40,12 +43,20 @@ export default function CommentList({ postId, onAdded }) {
           <Link to={`/u/${c.user.username}`}>
             <Avatar user={c.user} size={30} />
           </Link>
-          <div className="comment-bubble">
-            <strong className="small">{c.user.name}</strong> <span className="muted xs">· {c.ago}</span>
-            <p>{c.text}</p>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div className="comment-bubble">
+              <strong className="small">{c.user.name}</strong> <span className="muted xs">· {c.ago}</span>
+              <p>{c.text}</p>
+            </div>
+            {c.user.id !== user?.id && (
+              <button type="button" className="comment-report" onClick={() => setReportingId(c.id)}>
+                <Icon name="flag" size={12} /> {t('report.comment')}
+              </button>
+            )}
           </div>
         </div>
       ))}
+      {reportingId && <ReportDialog type="comment" id={reportingId} onClose={() => setReportingId(null)} />}
       <form className="comment-form" onSubmit={submit}>
         <Avatar user={user} size={30} />
         <input

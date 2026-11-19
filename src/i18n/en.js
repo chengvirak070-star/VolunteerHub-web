@@ -143,6 +143,7 @@ export default {
   'post.confirmDelete': 'Delete this post?',
   'post.notFound': 'Post not found.',
   'report.post': 'Report post',
+  'report.comment': 'Report',
   'report.title.post': 'Report this post',
   'report.title.comment': 'Report this comment',
   'report.title.user': 'Report this person',

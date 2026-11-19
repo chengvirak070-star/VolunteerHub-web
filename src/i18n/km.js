@@ -115,6 +115,7 @@ export default {
   'post.writeComment': 'សរសេរមតិ…',
   'post.send': 'ផ្ញើ',
   'report.post': 'រាយការណ៍ប្រកាស',
+  'report.comment': 'រាយការណ៍',
   'report.title.post': 'រាយការណ៍ប្រកាសនេះ',
   'report.title.comment': 'រាយការណ៍មតិនេះ',
   'report.title.user': 'រាយការណ៍មនុស្សនេះ',
