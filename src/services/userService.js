@@ -76,11 +76,17 @@ export async function markNotificationRead(id) {
  * Update my profile. avatar is a File or null.
  * Sent as POST + _method=PUT because PHP can't read files from a real PUT request.
  */
-export async function updateProfile({ name, bio, avatar }) {
+export async function updateProfile({ name, bio, avatar, city, school, skills, telegram, phone }) {
   const form = new FormData()
   form.append('_method', 'PUT')
   form.append('name', name)
   form.append('bio', bio ?? '')
+  // Extra details (empty = cleared). Skills go as one comma-separated text.
+  form.append('city', city ?? '')
+  form.append('school', school ?? '')
+  form.append('skills', (skills ?? []).join(', '))
+  form.append('telegram', telegram ?? '')
+  form.append('phone', phone ?? '')
   if (avatar) form.append('avatar', avatar)
   const res = await api('/profile', { method: 'POST', body: form })
   return mapUser(res.data)

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import EventCard from '../../components/event/EventCard.jsx'
+import Icon from '../../components/ui/Icon.jsx'
 import HoursTable from '../../components/user/HoursTable.jsx'
 import FollowListDialog from '../../components/user/FollowListDialog.jsx'
 import ProfileHeader from '../../components/user/ProfileHeader.jsx'
@@ -123,9 +124,57 @@ export default function Profile() {
         <aside style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <div className="card card-pad">
             <h3 style={{ fontSize: 15, marginBottom: 8 }}>{t('profile.about')}</h3>
-            <p className="small" style={{ color: 'var(--text-2)' }}>
-              {user.bio || '—'}
-            </p>
+            {user.bio ? (
+              <p className="small" style={{ color: 'var(--text-2)', whiteSpace: 'pre-wrap' }}>
+                {user.bio}
+              </p>
+            ) : (
+              <p className="small muted">{isMe ? t('profile.aboutEmptyMe') : '—'}</p>
+            )}
+
+            {(user.city || user.school || user.telegram || (isMe && user.phone)) && (
+              <ul className="about-list">
+                {user.city && (
+                  <li>
+                    <Icon name="pin" size={15} /> {user.city}
+                  </li>
+                )}
+                {user.school && (
+                  <li>
+                    <Icon name="school" size={15} /> {user.school}
+                  </li>
+                )}
+                {user.telegram && (
+                  <li>
+                    <Icon name="send" size={15} />
+                    <a className="link" href={`https://t.me/${user.telegram}`} target="_blank" rel="noreferrer">
+                      @{user.telegram}
+                    </a>
+                  </li>
+                )}
+                {isMe && user.phone && (
+                  <li title={t('profile.phoneHint')}>
+                    <Icon name="phone" size={15} /> {user.phone} <span className="muted xs">🔒</span>
+                  </li>
+                )}
+              </ul>
+            )}
+
+            {user.skills?.length > 0 && (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 12 }}>
+                {user.skills.map((s) => (
+                  <span key={s} className="chip" style={{ background: 'var(--bg)' }}>
+                    {s}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {isMe && !user.city && !user.skills?.length && (
+              <Link to="/profile/edit" className="link small" style={{ display: 'inline-block', marginTop: 10 }}>
+                + {t('profile.addDetails')}
+              </Link>
+            )}
           </div>
           {user.role === 'volunteer' && <BadgesCard hours={user.hours ?? 0} isMe={isMe} username={user.username} />}
         </aside>

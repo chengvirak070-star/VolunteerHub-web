@@ -91,6 +91,14 @@ const paths = {
   ),
   x: <path d="M18 6 6 18M6 6l12 12" />,
   flag: <path d="M5 21V4h11l-1.5 4L16 12H5" />,
+  school: (
+    <>
+      <path d="m2 9 10-5 10 5-10 5L2 9Z" />
+      <path d="M6 11v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5M22 9v6" />
+    </>
+  ),
+  send: <path d="M21 3 3 10.5l7 2.5 2.5 7L21 3ZM10 13l4-4" />,
+  phone: <path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 6 6L16 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2Z" />,
   check: <path d="m4 12 5 5L20 6" />,
   download: (
     <>

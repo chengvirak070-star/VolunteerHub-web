@@ -2169,3 +2169,147 @@ img {
 .follow-list .btn-block {
   margin-top: 10px;
 }
+
+/* ============ Edit profile: more details ============ */
+.edit-profile {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.edit-photo {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.edit-section {
+  font-size: 15px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+.skill-box {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  min-height: 48px;
+  padding: 7px 10px;
+  border: 1px solid #d4dcd9;
+  border-radius: 10px;
+  background: #fff;
+  cursor: text;
+}
+
+.skill-box:focus-within {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(20, 150, 127, 0.15);
+}
+
+.skill-box input {
+  flex: 1;
+  min-width: 140px;
+  border: 0;
+  outline: none;
+  font-size: 15px;
+  padding: 4px 2px;
+}
+
+.skill-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 6px 4px 10px;
+  border-radius: 999px;
+  background: var(--mint);
+  color: var(--teal-text);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.skill-chip button {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--teal-text);
+  cursor: pointer;
+}
+
+.skill-chip button:hover {
+  background: rgba(15, 122, 101, 0.15);
+}
+
+.skill-ideas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.skill-ideas .chip {
+  padding: 3px 10px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.skill-ideas .chip:hover {
+  border-color: var(--teal);
+  color: var(--teal-text);
+}
+
+.input-prefix {
+  display: flex;
+  align-items: center;
+  border: 1px solid #d4dcd9;
+  border-radius: 10px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.input-prefix:focus-within {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(20, 150, 127, 0.15);
+}
+
+.input-prefix span {
+  padding: 0 4px 0 14px;
+  color: var(--text-3);
+  font-weight: 600;
+}
+
+.input-prefix .input {
+  border: 0;
+  box-shadow: none !important;
+  padding-left: 2px;
+}
+
+/* About card on the profile */
+.about-list {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  font-size: 13px;
+}
+
+.about-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-2);
+  word-break: break-word;
+}
+
+.about-list svg {
+  color: var(--teal-text);
+  flex-shrink: 0;
+}
