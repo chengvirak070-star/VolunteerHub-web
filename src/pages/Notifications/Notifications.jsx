@@ -13,6 +13,8 @@ const ICONS = {
   event_reminder: 'bell',
   hours_approved: 'clock',
   hours_declined: 'clock',
+  bug_fixed: 'check',
+  report_reviewed: 'flag',
 }
 
 export default function Notifications() {
