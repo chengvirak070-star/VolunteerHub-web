@@ -193,15 +193,20 @@ export default function UserLayout() {
           </Link>
           <SearchBox key={urlQ} initial={urlQ} />
           <nav className="topbar-actions">
-            <NavLink to="/" end className={navCls} aria-label={t('nav.home')}>
+            {/* On phones these 3 live in the bottom menu instead (see .bottom-nav) */}
+            <NavLink to="/" end className={(s) => `${navCls(s)} hide-phone`} aria-label={t('nav.home')}>
               <Icon name="home" size={20} />
             </NavLink>
-            <NavLink to="/discover" className={navCls} aria-label={t('nav.discover')}>
+            <NavLink to="/discover" className={(s) => `${navCls(s)} hide-phone`} aria-label={t('nav.discover')}>
               <Icon name="compass" size={20} />
             </NavLink>
-            <NavLink to="/notifications" className={navCls} aria-label={t('nav.notifications')}>
+            <NavLink to="/notifications" className={(s) => `${navCls(s)} hide-phone`} aria-label={t('nav.notifications')}>
               <Icon name="bell" size={20} />
               {unread > 0 && <span className="badge-dot">{unread}</span>}
+            </NavLink>
+            {/* Phone only: the search box doesn't fit, so this opens the search page */}
+            <NavLink to="/search" className={(s) => `${navCls(s)} show-phone`} aria-label={t('nav.search')}>
+              <Icon name="search" size={20} />
             </NavLink>
             <Link to="/create" className="btn btn-primary hide-phone" style={{ marginLeft: 8 }}>
               <Icon name="plus" size={18} strokeWidth={2.2} />
@@ -233,7 +238,10 @@ export default function UserLayout() {
           </span>
         </NavLink>
         <NavLink to="/notifications">
-          <Icon name="bell" size={22} />
+          <span className="bottom-icon">
+            <Icon name="bell" size={22} />
+            {unread > 0 && <span className="badge-dot">{unread > 99 ? '99+' : unread}</span>}
+          </span>
           {t('nav.notifications')}
         </NavLink>
         <NavLink to={`/u/${user.username}`}>

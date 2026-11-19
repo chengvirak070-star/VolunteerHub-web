@@ -2313,3 +2313,42 @@ img {
   color: var(--teal-text);
   flex-shrink: 0;
 }
+
+/* ============ Phone: one navigation (bottom menu) ============ */
+.show-phone {
+  display: none !important;
+}
+
+.bottom-icon {
+  position: relative;
+  display: inline-flex;
+}
+
+.bottom-nav .badge-dot {
+  top: -5px;
+  right: -9px;
+}
+
+.phone-search {
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.phone-search .input {
+  flex: 1;
+  height: 44px;
+}
+
+.phone-search .btn {
+  height: 44px;
+}
+
+@media (max-width: 680px) {
+  .show-phone {
+    display: inline-grid !important;
+  }
+
+  form.show-phone {
+    display: flex !important;
+  }
+}

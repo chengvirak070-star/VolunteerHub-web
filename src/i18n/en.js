@@ -269,6 +269,7 @@ export default {
 
   // search
   'search.filters': 'Filters',
+  'search.go': 'Search',
   'search.category': 'Category',
   'search.when': 'When',
   'search.locationLabel': 'Location',

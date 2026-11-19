@@ -224,6 +224,7 @@ export default {
   'follow.you': 'អ្នក',
 
   'search.filters': 'តម្រង',
+  'search.go': 'ស្វែងរក',
   'search.category': 'ប្រភេទ',
   'search.when': 'ពេលណា',
   'search.locationLabel': 'ទីតាំង',

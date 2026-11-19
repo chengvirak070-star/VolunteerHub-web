@@ -23,9 +23,34 @@ export default function Search() {
   const people = useAsync(() => searchUsers(textQ), [textQ])
   const posts = useAsync(() => searchPosts(q), [q])
   const trending = useAsync(getTrending, [])
+  const [, setParams] = useSearchParams()
+  const [phoneQ, setPhoneQ] = useState(q)
 
   return (
     <div className="page page-narrow">
+      {/* Phone only: the top-bar search box is hidden on small screens */}
+      <form
+        className="phone-search show-phone"
+        role="search"
+        onSubmit={(e) => {
+          e.preventDefault()
+          setParams(phoneQ.trim() ? { q: phoneQ.trim() } : {})
+        }}
+      >
+        <input
+          className="input"
+          type="search"
+          value={phoneQ}
+          onChange={(e) => setPhoneQ(e.target.value)}
+          placeholder={t('nav.search')}
+          aria-label={t('nav.search')}
+          autoFocus={!q}
+        />
+        <button type="submit" className="btn btn-dark">
+          {t('search.go')}
+        </button>
+      </form>
+
       <div className="search-grid">
         <EventFilters value={filters} onChange={setFilters} />
 
