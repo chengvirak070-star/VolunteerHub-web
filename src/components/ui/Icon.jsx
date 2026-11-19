@@ -90,6 +90,7 @@ const paths = {
     </>
   ),
   x: <path d="M18 6 6 18M6 6l12 12" />,
+  flag: <path d="M5 21V4h11l-1.5 4L16 12H5" />,
   download: (
     <>
       <path d="M12 3v12M7 10l5 5 5-5" />

@@ -1983,3 +1983,54 @@ img {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+/* ============ Report dialog ============ */
+.modal-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(19, 38, 58, 0.45);
+}
+
+.modal {
+  width: 100%;
+  max-width: 440px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.report-reasons {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.report-reason {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.report-reason input {
+  accent-color: var(--teal);
+  margin: 0;
+}
+
+.report-reason.active {
+  border-color: var(--teal);
+  background: var(--mint-2);
+}
+
+.user-menu {
+  z-index: 30;
+}

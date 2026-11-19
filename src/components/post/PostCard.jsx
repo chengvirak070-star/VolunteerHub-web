@@ -12,6 +12,7 @@ import Avatar from '../user/Avatar.jsx'
 import UserName from '../user/UserName.jsx'
 import CommentList from './CommentList.jsx'
 import LikeButton from './LikeButton.jsx'
+import ReportDialog from './ReportDialog.jsx'
 
 export default function PostCard({ post, onShare, onDeleted, openComments = false }) {
   const { t } = useLang()
@@ -20,6 +21,7 @@ export default function PostCard({ post, onShare, onDeleted, openComments = fals
   const [commentCount, setCommentCount] = useState(post.commentCount)
   const [event, setEvent] = useState(post.event)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [reporting, setReporting] = useState(false)
   const isMine = user?.id === post.author.id
 
   function share() {
@@ -51,7 +53,7 @@ export default function PostCard({ post, onShare, onDeleted, openComments = fals
             <Link to={`/posts/${post.id}`}>{post.ago}</Link>
           </p>
         </div>
-        {isMine && (
+        {user && (
           <div style={{ position: 'relative' }}>
             <button
               type="button"
@@ -63,15 +65,33 @@ export default function PostCard({ post, onShare, onDeleted, openComments = fals
               <Icon name="more" size={20} />
             </button>
             {menuOpen && (
-              <div className="card user-menu" role="menu">
-                <button type="button" onClick={remove}>
-                  <Icon name="x" size={16} /> {t('post.delete')}
-                </button>
-              </div>
+              <>
+                {/* click anywhere else to close */}
+                <div style={{ position: 'fixed', inset: 0, zIndex: 25 }} onClick={() => setMenuOpen(false)} />
+                <div className="card user-menu" role="menu">
+                  {isMine ? (
+                    <button type="button" onClick={remove}>
+                      <Icon name="x" size={16} /> {t('post.delete')}
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMenuOpen(false)
+                        setReporting(true)
+                      }}
+                    >
+                      <Icon name="flag" size={16} /> {t('report.post')}
+                    </button>
+                  )}
+                </div>
+              </>
             )}
           </div>
         )}
       </header>
+
+      {reporting && <ReportDialog type="post" id={post.id} onClose={() => setReporting(false)} />}
 
       <p className="post-body">
         <RichText text={post.text} />
