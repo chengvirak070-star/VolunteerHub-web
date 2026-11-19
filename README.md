@@ -41,3 +41,5 @@ src/
 
 - Connected to the API: login, register, profile, follow
 - Still demo data: feed, events, posts, search, notifications, hours (coming in the next API phases)
+
+login demo acc :

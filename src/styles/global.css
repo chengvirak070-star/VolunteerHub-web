@@ -1941,3 +1941,45 @@ img {
   flex-wrap: wrap;
   font-size: 13px;
 }
+
+/* ============ Feed right column: always reachable ============ */
+/* Compact widgets; if still taller than the screen, the column scrolls by itself. */
+.feed-right.sticky-col {
+  max-height: calc(100vh - var(--topbar-h) - 36px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #cfd8d5 transparent;
+  padding-bottom: 4px;
+  gap: 10px;
+}
+
+.feed-right .widget {
+  padding: 12px 14px;
+}
+
+.feed-right .widget-head {
+  margin-bottom: 6px;
+}
+
+.feed-right .upcoming-item,
+.feed-right .follow-item {
+  padding: 5px 0;
+}
+
+.feed-right .chip {
+  padding: 3px 10px;
+  font-size: 12px;
+}
+
+.feed-right .help-card {
+  padding: 10px 12px;
+  font-size: 12px;
+}
+
+.one-line {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

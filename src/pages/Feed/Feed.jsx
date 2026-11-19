@@ -105,13 +105,13 @@ function RightColumn() {
               <Avatar user={u} size={36} />
             </Link>
             <div className="who">
-              <Link to={`/u/${u.username}`}>
+              <Link to={`/u/${u.username}`} className="one-line" title={u.name}>
                 <strong>{u.name}</strong>
               </Link>
-              <div className="muted xs">
+              <div className="muted xs one-line">
                 {u.role === 'organizer'
-                  ? `${t('user.organizer')} · ${compact(u.followers)} ${t('user.followers')}`
-                  : `${t('user.volunteer')} · ${u.hours} ${t('user.hours')}`}
+                  ? `${compact(u.followers)} ${t('user.followers')}`
+                  : `${u.hours} ${t('user.hours')}`}
               </div>
             </div>
             <FollowButton userId={u.id} initial={u.isFollowing} />
@@ -124,7 +124,7 @@ function RightColumn() {
           <h3>{t('feed.trending')}</h3>
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-          {trending.data?.map((tag) => (
+          {trending.data?.slice(0, 6).map((tag) => (
             <Link key={tag} to={`/search?q=${encodeURIComponent(tag)}`} className="chip chip-tag">
               {tag}
             </Link>
@@ -133,13 +133,9 @@ function RightColumn() {
       </section>
 
       <div className="help-card">
-        <Elephant size={48} />
+        <Elephant size={40} />
         <p>
-          {t('feed.helpPre')}{' '}
-          <a href="#" className="link" style={{ textDecoration: 'underline' }} onClick={(e) => e.preventDefault()}>
-            {t('feed.helpLink')}
-          </a>{' '}
-          {t('feed.helpPost')}
+          {t('feed.helpPre')} <strong>{t('feed.helpLink')}</strong> {t('feed.helpPost')}
         </p>
       </div>
     </aside>
