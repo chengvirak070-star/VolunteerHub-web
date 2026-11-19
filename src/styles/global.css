@@ -2045,3 +2045,46 @@ img {
   text-decoration: underline;
   cursor: pointer;
 }
+
+/* Bug report screenshot */
+.bug-add-shot {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 14px;
+  border: 2px dashed #c9d6d2;
+  border-radius: 12px;
+  background: #fafbfb;
+  color: var(--text);
+  text-align: left;
+}
+
+.bug-add-shot:hover {
+  border-color: var(--teal);
+  background: var(--mint-2);
+}
+
+.bug-add-shot svg {
+  color: var(--teal-text);
+  flex-shrink: 0;
+}
+
+.bug-shot {
+  position: relative;
+}
+
+.bug-shot img {
+  width: 100%;
+  max-height: 220px;
+  object-fit: contain;
+  background: #f1f4f3;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.bug-shot button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}

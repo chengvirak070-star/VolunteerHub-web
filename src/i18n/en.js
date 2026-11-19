@@ -166,6 +166,9 @@ export default {
   'bug.thanks': 'Thank you! We received your report.',
   'bug.errShort': 'Please describe the problem in a few words.',
   'bug.settingsHint': 'Found a bug? Let the team know.',
+  'bug.addScreenshot': 'Add a screenshot (optional)',
+  'bug.pasteHint': 'Click to choose a picture, or paste one with Ctrl + V',
+  'bug.screenshot': 'Screenshot',
   'settings.language': 'Language',
 
   // event

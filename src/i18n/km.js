@@ -137,6 +137,9 @@ export default {
   'bug.thanks': 'អរគុណ! យើងបានទទួលរបាយការណ៍របស់អ្នក។',
   'bug.errShort': 'សូមពិពណ៌នាបញ្ហាពីរបីពាក្យ។',
   'bug.settingsHint': 'រកឃើញបញ្ហា? ប្រាប់ក្រុមការងារ។',
+  'bug.addScreenshot': 'បន្ថែមរូបថតអេក្រង់ (ស្រេចចិត្ត)',
+  'bug.pasteHint': 'ចុចដើម្បីជ្រើសរូប ឬបិទភ្ជាប់ដោយ Ctrl + V',
+  'bug.screenshot': 'រូបថតអេក្រង់',
   'settings.language': 'ភាសា',
 
   'event.join': 'ចូលរួម',
