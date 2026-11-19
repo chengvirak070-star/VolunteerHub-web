@@ -1,4 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom'
+import { DesktopNotifyBanner } from '../../components/ui/DesktopNotifySetting.jsx'
 import Icon from '../../components/ui/Icon.jsx'
 import Avatar from '../../components/user/Avatar.jsx'
 import { useAsync } from '../../hooks/useAsync.js'
@@ -49,6 +50,8 @@ export default function Notifications() {
           {t('notif.markAll')}
         </button>
       </div>
+
+      <DesktopNotifyBanner />
 
       {loading && !data && <p className="empty">{t('common.loading')}</p>}
       {error && <p className="card empty">{error.message}</p>}

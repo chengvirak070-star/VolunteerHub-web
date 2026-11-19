@@ -1,3 +1,4 @@
+import DesktopNotifySetting from '../../components/ui/DesktopNotifySetting.jsx'
 import { openBugReport } from '../../services/api.js'
 import LangSwitch from '../../components/ui/LangSwitch.jsx'
 import { useAuth } from '../../context/AuthContext.jsx'
@@ -17,6 +18,8 @@ export default function Settings() {
           <span>{t('settings.language')}</span>
           <LangSwitch />
         </div>
+        <div className="divider" />
+        <DesktopNotifySetting />
         <div className="divider" />
         <div className="auth-row">
           <div>

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import Icon from '../components/ui/Icon.jsx'
 import Logo from '../components/ui/Logo.jsx'
@@ -10,7 +10,8 @@ import BugReportDialog from '../components/ui/BugReportDialog.jsx'
 import { openBugReport } from '../services/api.js'
 import Toast from '../components/ui/Toast.jsx'
 import { useToast } from '../hooks/useToast.js'
-import { getUnreadCount } from '../services/userService.js'
+import { showDesktopNotification } from '../services/desktopNotify.js'
+import { getNotifications, markNotificationRead } from '../services/userService.js'
 
 // Remounted (via key) whenever the URL query changes, e.g. clicking a hashtag
 function SearchBox({ initial }) {
@@ -98,18 +99,47 @@ function UserMenu() {
 
 // Unread notification count for the bell: loaded on start, every minute,
 // and again when notifications are read or the notifications page is opened/left.
-function useUnreadCount(onNotificationsPage) {
+/**
+ * Checks for notifications every 30 s: keeps the bell's unread number up to date and,
+ * for anything NEW since the page opened, shows a Windows notification (when VolunteerHub
+ * is in the background) or a small in-site message (when you are looking at it).
+ */
+function useNotificationWatcher(onNotificationsPage, openNotification) {
   const [count, setCount] = useState(0)
+  const seen = useRef(null) // ids already known; null until the first check
+  const openRef = useRef(openNotification)
+
+  useEffect(() => {
+    openRef.current = openNotification
+  }, [openNotification])
 
   useEffect(() => {
     let alive = true
-    const load = () =>
-      getUnreadCount()
-        .then((n) => alive && setCount(n))
-        .catch(() => {})
+    const load = async () => {
+      try {
+        const { items, unread } = await getNotifications()
+        if (!alive) return
+        setCount(unread)
+
+        const fresh = seen.current ? items.filter((n) => n.unread && !seen.current.has(n.id)) : []
+        seen.current = new Set([...(seen.current ?? []), ...items.map((n) => n.id)])
+
+        // Oldest first, at most 3 at once
+        for (const n of fresh.slice(0, 3).reverse()) {
+          const inBackground = document.hidden || !document.hasFocus()
+          const shown = inBackground && (await showDesktopNotification(n, openRef.current))
+          if (!shown) {
+            const who = ['like', 'comment', 'follow'].includes(n.type) && n.actor ? `${n.actor.name} ` : ''
+            window.dispatchEvent(new CustomEvent('vh-toast', { detail: `🔔 ${who}${n.text}` }))
+          }
+        }
+      } catch {
+        /* offline or server asleep: try again next time */
+      }
+    }
     load()
     window.addEventListener('vh-notifications-read', load)
-    const timer = setInterval(load, 60000)
+    const timer = setInterval(load, 30000)
     return () => {
       alive = false
       window.removeEventListener('vh-notifications-read', load)
@@ -126,7 +156,16 @@ export default function UserLayout() {
   const [params] = useSearchParams()
   const location = useLocation()
   const urlQ = location.pathname === '/search' ? params.get('q') || '' : ''
-  const unread = useUnreadCount(location.pathname === '/notifications')
+  const navigate = useNavigate()
+  // Clicking a Windows notification: mark it read and open the right page
+  const openNotification = useCallback(
+    (n) => {
+      markNotificationRead(n.id).catch(() => {})
+      navigate(n.link || '/notifications')
+    },
+    [navigate],
+  )
+  const unread = useNotificationWatcher(location.pathname === '/notifications', openNotification)
   const navCls = ({ isActive }) => `icon-btn ${isActive ? 'active' : ''}`
 
   // Any component can call toast('message') from services/api.js

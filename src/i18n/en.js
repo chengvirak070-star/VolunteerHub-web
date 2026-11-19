@@ -171,6 +171,16 @@ export default {
   'bug.pasteHint': 'Click to choose a picture, or paste one with Ctrl + V',
   'bug.screenshot': 'Screenshot',
   'settings.language': 'Language',
+  'desk.title': 'Show notifications on my computer',
+  'desk.on': 'On — new likes, comments, hours and replies pop up on your screen (Windows), while VolunteerHub is open in a tab.',
+  'desk.off': 'Off — turn on to see new notifications pop up on your screen, even when you are in another app.',
+  'desk.blocked': 'Blocked by your browser. Click the lock icon next to the address bar, set Notifications to Allow, then refresh.',
+  'desk.unsupported': 'Your browser does not support notifications.',
+  'desk.turnOn': 'Turn on',
+  'desk.turnOff': 'Turn off',
+  'desk.testBody': 'Notifications are on! You will see new activity here.',
+  'desk.bannerTitle': 'Get notified on your computer',
+  'desk.bannerText': 'See likes, comments and approved hours pop up on your screen, even when you are in another app.',
 
   // event
   'event.join': 'Join event',
