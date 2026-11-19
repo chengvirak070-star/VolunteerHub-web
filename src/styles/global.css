@@ -2034,3 +2034,14 @@ img {
 .user-menu {
   z-index: 30;
 }
+
+/* Link-looking button (e.g. "Report a problem" in the help card) */
+.link-btn {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--teal-text);
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}

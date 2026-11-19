@@ -6,6 +6,8 @@ import LangSwitch from '../components/ui/LangSwitch.jsx'
 import Avatar from '../components/user/Avatar.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useLang } from '../i18n/index.jsx'
+import BugReportDialog from '../components/ui/BugReportDialog.jsx'
+import { openBugReport } from '../services/api.js'
 import Toast from '../components/ui/Toast.jsx'
 import { useToast } from '../hooks/useToast.js'
 import { getUnreadCount } from '../services/userService.js'
@@ -81,6 +83,9 @@ function UserMenu() {
               <Icon name="clock" size={18} /> {t('nav.myHours')}
             </Link>
           )}
+          <button type="button" onClick={openBugReport}>
+            <Icon name="flag" size={18} /> {t('bug.menu')}
+          </button>
           <div className="divider" style={{ margin: '4px 0' }} />
           <button type="button" onClick={logout}>
             <Icon name="logout" size={18} /> {t('nav.logout')}
@@ -126,6 +131,14 @@ export default function UserLayout() {
 
   // Any component can call toast('message') from services/api.js
   const [toastMessage, showToast] = useToast(3000)
+
+  // "Report a problem" box: opened from the profile menu, Settings or the help card
+  const [bugOpen, setBugOpen] = useState(false)
+  useEffect(() => {
+    const open = () => setBugOpen(true)
+    window.addEventListener('vh-open-bug-report', open)
+    return () => window.removeEventListener('vh-open-bug-report', open)
+  }, [])
   useEffect(() => {
     const onToast = (e) => showToast(e.detail)
     window.addEventListener('vh-toast', onToast)
@@ -191,6 +204,7 @@ export default function UserLayout() {
       </nav>
 
       <Toast message={toastMessage} />
+      {bugOpen && <BugReportDialog page={location.pathname + location.search} onClose={() => setBugOpen(false)} />}
     </>
   )
 }

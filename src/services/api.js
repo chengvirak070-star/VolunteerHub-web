@@ -99,3 +99,8 @@ export async function downloadFile(path, filename) {
 export function toast(message) {
   window.dispatchEvent(new CustomEvent('vh-toast', { detail: message }))
 }
+
+/** Opens the "Report a problem" box from anywhere (see UserLayout + BugReportDialog). */
+export function openBugReport() {
+  window.dispatchEvent(new Event('vh-open-bug-report'))
+}

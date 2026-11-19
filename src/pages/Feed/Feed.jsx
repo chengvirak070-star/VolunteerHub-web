@@ -3,6 +3,7 @@ import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { EventRow } from '../../components/event/EventCard.jsx'
 import PostCard from '../../components/post/PostCard.jsx'
 import Elephant from '../../components/ui/Elephant.jsx'
+import { openBugReport } from '../../services/api.js'
 import Icon from '../../components/ui/Icon.jsx'
 import Avatar from '../../components/user/Avatar.jsx'
 import FollowButton from '../../components/user/FollowButton.jsx'
@@ -135,7 +136,10 @@ function RightColumn() {
       <div className="help-card">
         <Elephant size={40} />
         <p>
-          {t('feed.helpPre')} <strong>{t('feed.helpLink')}</strong> {t('feed.helpPost')}
+          {t('feed.helpPre')} <strong>{t('feed.helpLink')}</strong> {t('feed.helpPost')}{' '}
+          <button type="button" className="link-btn" onClick={openBugReport}>
+            {t('bug.menu')}
+          </button>
         </p>
       </div>
     </aside>

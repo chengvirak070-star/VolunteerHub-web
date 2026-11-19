@@ -157,6 +157,16 @@ export default {
   'report.thanks': 'Thank you. An admin will review this report.',
   'report.errChoose': 'Please choose a reason.',
   'report.errOther': 'Please write a few words about the problem.',
+  'bug.menu': 'Report a problem',
+  'bug.title': 'Report a problem',
+  'bug.hint': 'Something not working? Tell us what you did and what went wrong. The VolunteerHub team will look at it.',
+  'bug.placeholder': 'e.g. I pressed Join event but nothing happened.',
+  'bug.page': 'Page:',
+  'bug.send': 'Send',
+  'bug.thanks': 'Thank you! We received your report.',
+  'bug.errShort': 'Please describe the problem in a few words.',
+  'bug.settingsHint': 'Found a bug? Let the team know.',
+  'settings.language': 'Language',
 
   // event
   'event.join': 'Join event',

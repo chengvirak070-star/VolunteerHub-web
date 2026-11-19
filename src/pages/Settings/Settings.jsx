@@ -1,3 +1,4 @@
+import { openBugReport } from '../../services/api.js'
 import LangSwitch from '../../components/ui/LangSwitch.jsx'
 import { useAuth } from '../../context/AuthContext.jsx'
 import { useLang } from '../../i18n/index.jsx'
@@ -13,8 +14,18 @@ export default function Settings() {
       </div>
       <div className="card card-pad" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         <div className="auth-row">
-          <span>Language</span>
+          <span>{t('settings.language')}</span>
           <LangSwitch />
+        </div>
+        <div className="divider" />
+        <div className="auth-row">
+          <div>
+            <span>{t('bug.title')}</span>
+            <p className="muted xs">{t('bug.settingsHint')}</p>
+          </div>
+          <button type="button" className="btn btn-outline btn-sm" onClick={openBugReport}>
+            {t('bug.menu')}
+          </button>
         </div>
         <div className="divider" />
         <div className="auth-row">
